@@ -1,0 +1,2 @@
+NOWDATE=`date +%d%b%Y`
+tar cvzf /backup/$NOWDATE.backup.tar.gz /etc/ /root/ /hab/boneDeviceTree/ /hab/openhab/ /hab/1.* /home
