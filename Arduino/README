@@ -1,0 +1,1 @@
+Make sure to disable UDP from uipethernet-conf.h  ! ! !
