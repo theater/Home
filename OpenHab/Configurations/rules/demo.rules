@@ -256,13 +256,24 @@ end
 rule "Calculate AQ delta"
 	when Time cron"0 0 * * * ?"
 	then
-		val tmp1 = AQ_Temp_Sensor1.historicState(now).state as DecimalType
-		val tmp2 = AQ_Temp_Sensor1.historicState(now.minusMinutes(60)).state as DecimalType
-		val tmp3 = AQ_Temp_Sensor1.historicState(now.minusMinutes(120)).state as DecimalType
-		val delta1 = tmp1-tmp2
-		val delta2 = tmp2-tmp3
-		postUpdate(AQ_TempDelta1,delta1)
-		postUpdate(AQ_TempDelta2,delta2)
+val tmp12 = AQ_Temp_Sensor1.historicState(now.minusMinutes(60)).state as DecimalType
+val tmp11 = AQ_Temp_Sensor1.historicState(now.minusMinutes(55)).state as DecimalType
+val tmp10 = AQ_Temp_Sensor1.historicState(now.minusMinutes(50)).state as DecimalType
+val tmp9 = AQ_Temp_Sensor1.historicState(now.minusMinutes(45)).state as DecimalType
+val tmp8 = AQ_Temp_Sensor1.historicState(now.minusMinutes(40)).state as DecimalType
+val tmp7 = AQ_Temp_Sensor1.historicState(now.minusMinutes(35)).state as DecimalType
+val tmp6 = AQ_Temp_Sensor1.historicState(now.minusMinutes(30)).state as DecimalType
+val tmp5 = AQ_Temp_Sensor1.historicState(now.minusMinutes(25)).state as DecimalType
+val tmp4 = AQ_Temp_Sensor1.historicState(now.minusMinutes(20)).state as DecimalType
+val tmp3 = AQ_Temp_Sensor1.historicState(now.minusMinutes(15)).state as DecimalType
+val tmp2 = AQ_Temp_Sensor1.historicState(now.minusMinutes(10)).state as DecimalType
+val tmp1 = AQ_Temp_Sensor1.historicState(now.minusMinutes(5)).state as DecimalType
+		var delta1 = (tmp1 + tmp2 + tmp3 + tmp4 +tmp5 +tmp6)/6 - (tmp7+tmp8+tmp9+tmp10+tmp11+tmp12)/6 
+		val avg1 = (tmp7+tmp8+tmp9+tmp10+tmp11+tmp12)/6
+		val avg2 = (tmp2+tmp3)/2
+		postUpdate(AQ_TempDelta1,delta1)	
+		postUpdate(AQ_TempAvg1,avg1)
+		postUpdate(AQ_TempAvg2,avg2)
 end
 
 /***************************AQUARIUM *********************************/
@@ -286,7 +297,7 @@ val lr_temp_sensor1= LR_Temp_sensor1.state as DecimalType
 // also if real vs set temperature is more than 1.5C
 // also if Light is ON and the real temperature is more than the set temperature... 
 // THEN - ON, else - OFF
-		if (((aq_temp_sensor-aq_temp_set_temp)>0.5)&&(delta1>0.15)||(aq_temp_sensor>(aq_temp_set_temp+1.5))||(AQ_Light1.state=="ON")) {
+		if (((aq_temp_sensor-aq_temp_set_temp)>0.5)&&(delta1>0.15)||(aq_temp_sensor>(aq_temp_set_temp+1.3))||((AQ_Light1.state==ON)&&(aq_temp_sensor>aq_temp_set_temp))) {
 			sendCommand(AQ_Cooler1,ON)
 		} else{
 			sendCommand(AQ_Cooler1,OFF)
@@ -336,40 +347,5 @@ if(AQ_Light1.state==ON) {
 logDebug("RULES","Aquarium light on ends HERE")
 end
 
-/*  
-rule "MQTT TEMPERATURE REPOST"
-when Item AQ_Temp_sensor1 changed or Item LR_Temp_sensor1 changed then
-	postUpdate(LR_Temp_sensor1,LR_Temp_sensor1.state)
-	postUpdate(AQ_Temp_Sensor1,AQ_Temp_Sensor1.state)
-end
-*/
-
-
-/*   
-rule "Temperature calculation"
-when Item AQ_Temp_Sensor1 changed
-then {  
-val tmp1 = AQ_Temp_Sensor1.historicState(now.minusMinutes(35)).state as DecimalType
-val tmp2 = AQ_Temp_Sensor1.historicState(now.minusMinutes(30)).state as DecimalType
-val tmp3 = AQ_Temp_Sensor1.historicState(now.minusMinutes(25)).state as DecimalType
-val tmp4 = AQ_Temp_Sensor1.historicState(now.minusMinutes(20)).state as DecimalType
-val tmp5 = AQ_Temp_Sensor1.historicState(now.minusMinutes(15)).state as DecimalType
-val tmp6 = AQ_Temp_Sensor1.historicState(now.minusMinutes(10)).state as DecimalType
-val tmp7 = AQ_Temp_Sensor1.historicState(now.minusMinutes(5)).state as DecimalType
-val delta1 = tmp2 - tmp1  
-val delta2 = tmp3 - tmp2
-val delta3 = tmp4 - tmp3
-val delta4 = tmp5 - tmp4
-val delta5 = tmp6 - tmp5
-val delta6 = tmp7 - tmp6
-val deltaResult = (delta1 + delta2 + delta3)/3 - (delta4 + delta5 + delta6)/3 
-//var deltaResult = (delta6+delta5+delta4)/3
-
-//val Number tmp1 = AQ_Temp_Sensor1.historicState(now).state as DecimalType 	
-//postUpdate(AQ_TempDelta,AQ_Temp_Sensor1.historicState(now.minusHours(3)).state) }
-postUpdate(AQ_TempDelta,deltaResult) 
-}
-end
-*/
 
 /**/

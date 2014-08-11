@@ -56,16 +56,26 @@ sitemap demo label="Main Menu"
 				Frame  {
 					Text item=AQ_Temp_MIN 					
 					Text item=AQ_Temp_MAX 					
-					Text item=AQ_TempDelta1 					
-					Text item=AQ_TempDelta2
+					Text item=AQ_TempDelta1 valuecolor=[<-0.5="blue", >-0.5="green", >0.5="red"] { 
+						Frame {
+							Switch item=Chart_Period1 label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week", 3="Month", 4="Year"] 
+							Chart item=AQ_TempDelta1 period=h refresh=600 visibility=[Chart_Period1==0] 					
+							Chart item=AQ_TempDelta1 period=D refresh=3600 visibility=[Chart_Period1==1] 					
+							Chart item=AQ_TempDelta1 period=W refresh=3600 visibility=[Chart_Period1==2, Chart_Period1==Uninitialized] 					
+							Chart item=AQ_TempDelta1 period=M refresh=3600 visibility=[Chart_Period1==3]					
+							Chart item=AQ_TempDelta1 period=Y refresh=3600 visibility=[Chart_Period1==4]
+						}
+					}
+					Text item=AQ_TempAvg1 { Chart item=AQ_TempAvg1 period=D refresh=3600	}
+					Text item=AQ_TempAvg2				
 				}				
 				Frame  {
 					Switch item=Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week", 3="Month", 4="Year"] 					
-					Chart item=AQ_Temperature_Chart period=h refresh=600 visibility=[Chart_Period==0] 					
-					Chart item=AQ_Temperature_Chart period=D refresh=3600 visibility=[Chart_Period==1] 					
-					Chart item=AQ_Temperature_Chart period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-					Chart item=AQ_Temperature_Chart period=M refresh=3600 visibility=[Chart_Period==3]					
-					Chart item=AQ_Temperature_Chart period=Y refresh=3600 visibility=[Chart_Period==4]
+					Chart item=AQ_Temp_Sensor1 period=h refresh=600 visibility=[Chart_Period==0] 					
+					Chart item=AQ_Temp_Sensor1 period=D refresh=3600 visibility=[Chart_Period==1] 					
+					Chart item=AQ_Temp_Sensor1 period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
+					Chart item=AQ_Temp_Sensor1 period=M refresh=3600 visibility=[Chart_Period==3]					
+					Chart item=AQ_Temp_Sensor1 period=Y refresh=3600 visibility=[Chart_Period==4]
 				}				
 			}			
 			Switch item=AQ_Light1 			
@@ -113,22 +123,18 @@ sitemap demo label="Main Menu"
 				}						
 			}
 			Group item=System icon="settings" {
- 				Text item=loadAverage1min 
-				Text item=loadAverage5min
-				Text item=loadAverage15min
-				Text item=uptime
-				Text item=uptimeFormatted  
-				Text item=MemFreePercent
-				Text item=MemUsedPercent
-				Text item=MemTotal
-				Text item=OpenhabRealMem
-				Text item=OpenhabVirtualMem
-				Text item=OpenhabCpuPercent
-				Text item=OpenhabCpuSystem
-				Text item=OpenhabCpuUser
-				Text item=OpenhabCpuTotal
-				Text item=OpenhabUptime 
-				Text item=OpenhabUptimeFormatted 
+ 				Text item=uptimeFormatted { Chart item=uptimeFormatted period=D refresh=3600 }
+				Text item=DirUsage_root { Chart item=DirUsage_root period=D refresh=3600 }
+				Text item=MemFreePercent { Chart item=MemFreePercent period=D refresh=3600 }
+				Text item=MemUsedPercent { Chart item=MemUsedPercent period=D refresh=3600 }
+				Text item=MemTotal { Chart item=MemTotal period=D refresh=3600 }
+				Text item=OpenhabRealMem { Chart item=OpenhabRealMem period=D refresh=3600 }
+				Text item=OpenhabVirtualMem { Chart item=OpenhabVirtualMem period=D refresh=3600 }
+				Text item=OpenhabCpuPercent { Chart item=OpenhabCpuPercent period=D refresh=3600 }
+				Text item=OpenhabCpuSystem { Chart item=OpenhabCpuSystem period=D refresh=3600 }
+				Text item=OpenhabCpuUser { Chart item=OpenhabCpuUser period=D refresh=3600 }
+				Text item=OpenhabCpuTotal { Chart item=OpenhabCpuTotal period=D refresh=3600 }
+				Text item=OpenhabUptimeFormatted { Chart item=OpenhabUptimeFormatted period=D refresh=3600 }
 			}
 		}		
 	}	
