@@ -276,7 +276,7 @@ val delta1 = AQ_TempDelta1.state as DecimalType
 val lr_temp_sensor1= LR_Temp_sensor1.state as DecimalType
 //val delta2 = AQ_TempDelta2.state as DecimalType
 	if ((aq_temp_sensor!="UNDEFINED"||aq_temp_sensor!="NULL")&&(AQ_TempDelta1!="UNDEFINED"||AQ_TempDelta1!="NULL")) { 
-		if ((aq_temp_sensor<aq_temp_set_temp)&&(delta1<-0.25)) {  
+		if ((aq_temp_sensor<aq_temp_set_temp)&&(delta1<-0.20)) {  
 			sendCommand(AQ_Heater1,ON)
 		} else {
 			sendCommand(AQ_Heater1,OFF)
@@ -335,12 +335,14 @@ if(AQ_Light1.state==ON) {
 }
 logDebug("RULES","Aquarium light on ends HERE")
 end
- 
-rule "MQTT TEST1"
-when Item MQTT_Test_in changed then
-	postUpdate(MQTT_Test_in,MQTT_Test_in.state)
-end
 
+/*  
+rule "MQTT TEMPERATURE REPOST"
+when Item AQ_Temp_sensor1 changed or Item LR_Temp_sensor1 changed then
+	postUpdate(LR_Temp_sensor1,LR_Temp_sensor1.state)
+	postUpdate(AQ_Temp_Sensor1,AQ_Temp_Sensor1.state)
+end
+*/
 
 
 /*   

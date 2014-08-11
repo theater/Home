@@ -15,7 +15,9 @@ Group 	IP_Devices (All,Persisted_items)
 Number	ALL_Reinitialize	"Initialize system"	(All)	
 Switch	LR_Heater1	"Отопление - дневна"	<heater2>	(All,Heaters,LR)	
 Number	LR_Heater1_mode	"Режим"	<network>	(All,Modes,LR)	
-Number	LR_Temp_sensor1	"Текуща Т °C в дневна [%.1f °C]"	<temperature>	(All,Sensors,LR,Persisted_items) { onewire="28.FF5959201400#temperature"}	
+Number	LR_Temp_sensor1	"Т °C в дневна [%.1f °C]"	<temperature>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Temp_Sensor1:state:default" } // onewire="28.FF5959201400#temperature"	 
+Number	LR_Temp_sensor2	"Т °C в дневна DHT11 [%.1f °C]"	<temperature>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Temp_Sensor2:state:default" } // onewire="28.FF5959201400#temperature"
+Number	LR_Humidity_sensor1	"Влажност в дневна DHT11 [%.1f %%]"	<temperature>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Humidity_sensor1:state:default" } // onewire="28.FF5959201400#temperature"
 Number	LR_Set_TemperatureON	"Т °C в дневна ръчен режим [%.1f °C]"	<temperature>	(All,LR,Persisted_items)	
 Number	LR_Set_Temperature1	"Т °C в дневна през работно време [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
 Number	LR_Set_Temperature2	"Т °C в дневна когато сме вкъщи [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
@@ -27,10 +29,10 @@ Rollershutter	LR_East_Shutter04	"Щора,изток - врата-хол"	(All,L
 Rollershutter	LR_South_Shutter01	"Щора,южна - прозорец"	(All,LR,Roller_Shutters)	
 Group	AQ_Temperature_Chart
 Number	AQ_Temperature_Chart_Period	(AQ_Temperature_Chart,Persisted_items)	
-Number	AQ_Temp_Sensor1	"Температура [%.1f °C]"	<temperature>	(All,Sensors,Aquarium,Persisted_items,AQ_Temperature_Chart)		{ onewire="28.5E74D2050000#temperature" }
-Switch	AQ_Heater1	"Нагревател"	<heater2>	(All,Heaters,Aquarium,Persisted_items)		{ gpio="pin:47 activelow:yes", mqtt=">[mqtt:AQ_Heater1:command:*:${command}]" }  
-Switch	AQ_Cooler1	"Охладител"	<cooler2> (All,Coolers,Aquarium,Persisted_items) 	{ gpio="pin:45 activelow:yes", mqtt=">[mqtt:AQ_Cooler1:command:*:${command}]"}  
-Switch	AQ_Light1	"Осветление"	<light>	(All,Aquarium,Lights,Persisted_items)		{ gpio="pin:60 activelow:yes", mqtt=">[mqtt:AQ_Light1:command:*:${command}]"} 
+Number	AQ_Temp_Sensor1	"Температура [%.1f °C]"	<temperature>	(All,Sensors,Aquarium,Persisted_items,AQ_Temperature_Chart)		{ mqtt="<[mqtt:AQ_Temp_Sensor1:state:default" } //onewire="28.5E74D2050000#temperature"
+Switch	AQ_Heater1	"Нагревател"	<heater2>	(All,Heaters,Aquarium,Persisted_items)		{ mqtt=">[mqtt:AQ_Heater1:command:*:${command}]" } //gpio="pin:47 activelow:yes",  
+Switch	AQ_Cooler1	"Охладител"	<cooler2> (All,Coolers,Aquarium,Persisted_items) 	{ mqtt=">[mqtt:AQ_Cooler1:command:*:${command}]"}   // gpio="pin:45 activelow:yes",
+Switch	AQ_Light1	"Осветление"	<light>	(All,Aquarium,Lights,Persisted_items)		{ mqtt=">[mqtt:AQ_Light1:command:*:${command}]"}  //gpio="pin:60 activelow:yes", 
 Number	AQ_Set_Temperature	"Задаване температура на аквариум [%.1f °C]"	<temperature>	(AQ,Persisted_items)	
 Number	AQ_TempDelta1	"Температурна разлика за последния час [%.4f °C]"	<temperature>	(All,Aquarium,Persisted_items)	
 Number	AQ_TempDelta2	"Температурна разлика за предпоследния час [%.4f °C]"	<temperature>	(All,Aquarium,Persisted_items)
@@ -49,6 +51,7 @@ Switch  IP_TV "TV" <network> (IP_Devices,Persisted_items) { nh="192.168.254.103"
 Switch  IP_PC "PC" <network> (IP_Devices,Persisted_items) { nh="192.168.254.100", wol="192.168.254.100#BC:AE:C5:98:CB:61", exec=">[OFF:/bin/sh@@-c@@/hab/openhab/shutdown_pc 192.168.254.100 theater charly78]" }
 Switch  IP_Beaglebone "BeagleBone" <network> (IP_Devices,Persisted_items) { nh="192.168.254.30" }
 Switch  IP_Router "TP-Link" <network> (IP_Devices,Persisted_items) { nh="192.168.254.1" }
+Switch  IP_AQ_Arduino "Arduino Aquarium" <network> (IP_Devices,Persisted_items) { nh="192.168.254.35" }
 
 Number	Chart_Period	"Chart Period"
 
@@ -74,4 +77,3 @@ String OpenhabUptimeFormatted   "Uptime form. [%s]" (System,Persisted_items) { s
 /**/
 
 // PLAYGROUND
-Number MQTT_Test_in "T°C MQTT IN [%.1f °C]" <temperature> {mqtt="<[mqtt:TempSensor1:state:default]" }

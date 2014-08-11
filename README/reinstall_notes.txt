@@ -25,10 +25,11 @@ add DNS servers to /etc/resolv.conf
 
 
 
-add the following to /etc/init.d/rc.local:
+add the following to /root/.profile
 export JAVA_HOME=/hab/java
 export PATH=$PATH:/sbin:/usr/sbin:/bin:/usr/bin:$JAVA_HOME/bin
 export TZ="EET"
+dpkg-reconfigure tzdata
 
 See /etc/default/capemgr if you want to add more capes/device overlays
 add them inside ! ! !

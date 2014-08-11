@@ -1,9 +1,5 @@
 sitemap demo label="Main Menu"
 {
-	Frame label="MQTT tests"{
-		Switch item=MQTT_Test
-		Text item=MQTT_Test_in	
-	}
 	Frame label="Стаи"  {
 		Text label="Дневна стая" icon="living"  {
 			Text item=LR_Heater1 icon="heater2" 			
@@ -15,9 +11,27 @@ sitemap demo label="Main Menu"
 					Chart item=LR_Temp_sensor1 period=h refresh=600 visibility=[Chart_Period==0] 					
 					Chart item=LR_Temp_sensor1 period=D refresh=3600 visibility=[Chart_Period==1] 					
 					Chart item=LR_Temp_sensor1 period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-					Chart item=LR_Temp_sensor1 period=M refresh=3600 visibility=[Chart_Period==3, Chart_Period==Uninitialized]
+					Chart item=LR_Temp_sensor1 period=M refresh=3600 visibility=[Chart_Period==3]
 				}				
-			}			
+			}
+			Text item=LR_Temp_sensor2 valuecolor=[>25="orange", >17="green", <=17="blue"]  {
+				Frame  {
+					Switch item=Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week", 3="Month"] 					
+					Chart item=LR_Temp_sensor2 period=h refresh=600 visibility=[Chart_Period==0] 					
+					Chart item=LR_Temp_sensor2 period=D refresh=3600 visibility=[Chart_Period==1] 					
+					Chart item=LR_Temp_sensor2 period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
+					Chart item=LR_Temp_sensor2 period=M refresh=3600 visibility=[Chart_Period==3]
+				}				
+			}
+			Text item=LR_Humidity_sensor1 valuecolor=[<35="orange", >35="green", >55="orange", >70="red"]  {
+				Frame  {
+					Switch item=Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week", 3="Month"] 					
+					Chart item=LR_Humidity_sensor1 period=h refresh=600 visibility=[Chart_Period==0] 					
+					Chart item=LR_Humidity_sensor1 period=D refresh=3600 visibility=[Chart_Period==1] 					
+					Chart item=LR_Humidity_sensor1 period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
+					Chart item=LR_Humidity_sensor1 period=M refresh=3600 visibility=[Chart_Period==3]
+				}				
+			}												
 			Text label="Температури на различните програми" icon="clock"  {
 				Frame  {
 					Setpoint item=LR_Set_Temperature1 minValue=5 maxValue=25 step=1 					
@@ -93,7 +107,10 @@ sitemap demo label="Main Menu"
 				}			
 				Text item=IP_Router {
 					Chart item=IP_Router period=W refresh=3600				
-				}			
+				}
+				Text item=IP_AQ_Arduino {
+					Chart item=IP_AQ_Arduino period=W refresh=3600				
+				}						
 			}
 			Group item=System icon="settings" {
  				Text item=loadAverage1min 
