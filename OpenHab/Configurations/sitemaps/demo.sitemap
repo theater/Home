@@ -1,0 +1,160 @@
+sitemap demo label="Main Menu"
+{
+	Frame label="Стаи"  {
+		Text label="Дневна стая" icon="living"  {
+			Text item=LR_Heater1 icon="heater2" 			
+			Switch item=LR_Heater1_mode mappings=[0="off", 1="manual", 2="auto"] 			
+			Setpoint item=LR_Set_TemperatureON minValue=5 maxValue=25 step=1 			
+			Text item=LR_Temp_sensor1 valuecolor=[>25="orange", >17="green", <=17="blue"]  {
+				Frame  {
+					Switch item=Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week", 3="Month"] 					
+					Chart item=LR_Temp_sensor1 period=h refresh=600 visibility=[Chart_Period==0] 					
+					Chart item=LR_Temp_sensor1 period=D refresh=3600 visibility=[Chart_Period==1] 					
+					Chart item=LR_Temp_sensor1 period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
+					Chart item=LR_Temp_sensor1 period=M refresh=3600 visibility=[Chart_Period==3]
+				}				
+			}
+			Text item=LR_Temp_sensor2 valuecolor=[>25="orange", >17="green", <=17="blue"]  {
+				Frame  {
+					Switch item=Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week", 3="Month"] 					
+					Chart item=LR_Temp_sensor2 period=h refresh=600 visibility=[Chart_Period==0] 					
+					Chart item=LR_Temp_sensor2 period=D refresh=3600 visibility=[Chart_Period==1] 					
+					Chart item=LR_Temp_sensor2 period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
+					Chart item=LR_Temp_sensor2 period=M refresh=3600 visibility=[Chart_Period==3]
+				}				
+			}
+			Text item=LR_Humidity_sensor1 valuecolor=[<35="orange", >35="green", >55="orange", >70="red"]  {
+				Frame  {
+					Switch item=Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week", 3="Month"] 					
+					Chart item=LR_Humidity_sensor1 period=h refresh=600 visibility=[Chart_Period==0] 					
+					Chart item=LR_Humidity_sensor1 period=D refresh=3600 visibility=[Chart_Period==1] 					
+					Chart item=LR_Humidity_sensor1 period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
+					Chart item=LR_Humidity_sensor1 period=M refresh=3600 visibility=[Chart_Period==3]
+				}				
+			}												
+			Text label="Температури на различните програми" icon="clock"  {
+				Frame  {
+					Setpoint item=LR_Set_Temperature1 minValue=5 maxValue=25 step=1 					
+					Setpoint item=LR_Set_Temperature2 minValue=5 maxValue=25 step=1 					
+					Setpoint item=LR_Set_Temperature3 minValue=5 maxValue=25 step=1 					
+				}				
+			}			
+			Text label="Щори" icon="rollershutter"  {
+				Switch item=LR_East_Shutter01 				
+				Switch item=LR_East_Shutter02 				
+				Switch item=LR_East_Shutter03 				
+				Switch item=LR_East_Shutter04 				
+				Switch item=LR_South_Shutter01 				
+			}			
+		}		
+	}	
+	Frame label="Аквариум"  {
+		Text label="Аквариум" icon="fish"  {
+			Switch item=AQ_Heater1 icon="heater2" 			
+			Switch item=AQ_Cooler1 icon="cooler2" 			
+			Text item=AQ_Temp_Sensor1 valuecolor=[>28="red", >26="orange", >24="green", <=24="blue"]  {
+				Frame  {
+					Text item=AQ_Temp_MIN 					
+					Text item=AQ_Temp_MAX 					
+					Text item=AQ_TempDelta1 valuecolor=[<-0.5="blue", >-0.5="green", >0.5="red"] { 
+						Frame {
+							Switch item=Chart_Period1 label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week", 3="Month", 4="Year"] 
+							Chart item=AQ_TempDelta1 period=h refresh=600 visibility=[Chart_Period1==0] 					
+							Chart item=AQ_TempDelta1 period=D refresh=3600 visibility=[Chart_Period1==1] 					
+							Chart item=AQ_TempDelta1 period=W refresh=3600 visibility=[Chart_Period1==2, Chart_Period1==Uninitialized] 					
+							Chart item=AQ_TempDelta1 period=M refresh=3600 visibility=[Chart_Period1==3]					
+							Chart item=AQ_TempDelta1 period=Y refresh=3600 visibility=[Chart_Period1==4]
+						}
+					}
+					Text item=AQ_TempAvg1 { Chart item=AQ_TempAvg1 period=D refresh=3600	}
+					Text item=AQ_TempAvg2				
+				}				
+				Frame  {
+					Switch item=Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week", 3="Month", 4="Year"] 					
+					Chart item=AQ_Temp_Sensor1 period=h refresh=600 visibility=[Chart_Period==0] 					
+					Chart item=AQ_Temp_Sensor1 period=D refresh=3600 visibility=[Chart_Period==1] 					
+					Chart item=AQ_Temp_Sensor1 period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
+					Chart item=AQ_Temp_Sensor1 period=M refresh=3600 visibility=[Chart_Period==3]					
+					Chart item=AQ_Temp_Sensor1 period=Y refresh=3600 visibility=[Chart_Period==4]
+				}				
+			}			
+			Switch item=AQ_Light1 			
+			Text label="Настройки" icon="settings"  {
+				Setpoint item=AQ_Set_Temperature minValue=20 maxValue=30 step=0.5 				
+			}			
+		}		
+	}	
+	Frame label="Administrative"  {
+		Text label="Mass-control" icon="settings"  {
+			Switch item=Heaters icon="heater2" mappings=[OFF="All heaters Off"] 			
+			Switch item=ALL_Reinitialize icon="settings" mappings=[1="System initialize"] 			
+			Group item=Heaters icon="heater2"  {
+				Switch item=LR_Heater1 				
+				Switch item=AQ_Heater1 				
+			}			
+			Group item=Coolers icon="cooler2"  {
+				Switch item=AQ_Cooler1 				
+			}			
+			Group item=Lights icon="light"  {
+				Switch item=AQ_Light1 				
+			}			
+ 			
+		}
+		Text label="Monitoring" icon="settings" {		
+			Text label="IP Devices" icon="network"  {
+				Text item=IP_iPhone  {
+					Chart item=IP_iPhone period=W refresh=3600				
+				}			
+				Text item=IP_Nexus  {
+					Chart item=IP_Nexus period=W refresh=3600				
+				}			
+				Text item=IP_TV  {
+					Chart item=IP_TV period=W refresh=3600				
+				}			
+				Switch item=IP_PC 			
+				Text item=IP_Beaglebone {
+					Chart item=IP_Beaglebone period=W refresh=3600				
+				}			
+				Text item=IP_Router {
+					Chart item=IP_Router period=W refresh=3600				
+				}
+				Text item=IP_AQ_Arduino {
+					Chart item=IP_AQ_Arduino period=W refresh=3600				
+				}						
+			}
+			Group item=System icon="settings" {
+ 				Text item=uptimeFormatted { Chart item=uptimeFormatted period=D refresh=3600 }
+				Text item=DirUsage_root { Chart item=DirUsage_root period=D refresh=3600 }
+				Text item=MemFreePercent { Chart item=MemFreePercent period=D refresh=3600 }
+				Text item=MemUsedPercent { Chart item=MemUsedPercent period=D refresh=3600 }
+				Text item=MemTotal { Chart item=MemTotal period=D refresh=3600 }
+				Text item=OpenhabRealMem { Chart item=OpenhabRealMem period=D refresh=3600 }
+				Text item=OpenhabVirtualMem { Chart item=OpenhabVirtualMem period=D refresh=3600 }
+				Text item=OpenhabCpuPercent { Chart item=OpenhabCpuPercent period=D refresh=3600 }
+				Text item=OpenhabCpuSystem { Chart item=OpenhabCpuSystem period=D refresh=3600 }
+				Text item=OpenhabCpuUser { Chart item=OpenhabCpuUser period=D refresh=3600 }
+				Text item=OpenhabCpuTotal { Chart item=OpenhabCpuTotal period=D refresh=3600 }
+				Text item=OpenhabUptimeFormatted { Chart item=OpenhabUptimeFormatted period=D refresh=3600 }
+			}
+		}		
+	}	
+	Frame label="Weather"  {
+		Text item=Weather_Temperature valuecolor=[Weather_LastUpdate==Uninitialized="lightgray", Weather_LastUpdate>90="lightgray", >30="red", >25="orange", >10="green", <=5="blue"]  {
+			Frame  {
+				Text item=Weather_Temp_Max valuecolor=[>30="red", >25="orange", >10="green", <=5="blue"] 				
+				Text item=Weather_Temp_Min valuecolor=[>30="red", >25="orange", >10="green", <=5="blue"] 				
+				Text item=Weather_LastUpdate valuecolor=[Weather_LastUpdate>120="orange", Weather_LastUpdate>300="red"]  visibility=[Weather_LastUpdate>30] 				
+			}			
+			Frame  {
+				Switch item=Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week", 3="Month"] 				
+				Chart item=Weather_Temperature period=h refresh=600 visibility=[Chart_Period==0] 				
+				Chart item=Weather_Temperature period=D refresh=3600 visibility=[Chart_Period==1] 				
+				Chart item=Weather_Temperature period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+				Chart item=Weather_Temperature period=M refresh=3600 visibility=[Chart_Period==3] 				 				
+			}			
+		}		
+	}	
+	Frame label="Date"  {
+		Text item=Date 		
+	}	
+}

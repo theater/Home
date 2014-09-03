@@ -1,0 +1,2 @@
+Make sure to disable UDP from uipethernet-conf.h  ! ! !
+Otherwise the program gets too big :(

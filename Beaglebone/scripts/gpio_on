@@ -1,0 +1,4 @@
+#!/bin/bash
+echo $1 > $GPIO/export
+echo out > $GPIO/gpio$1/direction
+echo 0 > $GPIO/gpio$1/value

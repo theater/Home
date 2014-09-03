@@ -1,0 +1,83 @@
+Group	All
+Group	Heaters	"All Heaters"	<heater2>	(All)	
+Group	Sensors	(All)
+Group 	System (All)	
+Group	Roller_Shutters	(All)	
+Group	Aquarium	(All)	
+Group	Persisted_items	(All)	
+Group	Lights	"All Lights"	<light>	(All)	
+Group   Coolers "All coolers/chillers" <cooler2> (All)
+Group	Indicators	"All Indicators [(%d)]"	<light>	(All)	
+Group	Modes	"All indicator modes [%d]"	(All)	
+Group	LR	"Дневна стая"	<living>
+Group	LR_Programs	(LR)	
+Group 	IP_Devices (All,Persisted_items)
+Number	ALL_Reinitialize	"Initialize system"	(All)	
+Switch	LR_Heater1	"Отопление - дневна"	<heater2>	(All,Heaters,LR)	
+Number	LR_Heater1_mode	"Режим"	<network>	(All,Modes,LR,Persisted_items)	
+Number	LR_Temp_sensor1	"Т °C в дневна [%.1f °C]"	<temperature>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Temp_Sensor1:state:default" } // onewire="28.FF5959201400#temperature"	 
+Number	LR_Temp_sensor2	"Т °C в дневна DHT11 [%.1f °C]"	<temperature>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Temp_Sensor2:state:default" } // onewire="28.FF5959201400#temperature"
+Number	LR_Humidity_sensor1	"Влажност в дневна DHT11 [%.1f %%]"	<temperature>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Humidity_sensor1:state:default" } // onewire="28.FF5959201400#temperature"
+Number	LR_Set_TemperatureON	"Т °C в дневна ръчен режим [%.1f °C]"	<temperature>	(All,LR,Persisted_items)	
+Number	LR_Set_Temperature1	"Т °C в дневна през работно време [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
+Number	LR_Set_Temperature2	"Т °C в дневна когато сме вкъщи [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
+Number	LR_Set_Temperature3	"Т °C в дневна през нощта [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
+Rollershutter	LR_East_Shutter01	"Щора,изток - прозорец-кухня"	(All,LR,Roller_Shutters)	
+Rollershutter	LR_East_Shutter02	"Щора,изток - врата-кухня"	(All,LR,Roller_Shutters)	
+Rollershutter	LR_East_Shutter03	"Щора,изток - прозорец-хол"	(All,LR,Roller_Shutters)	
+Rollershutter	LR_East_Shutter04	"Щора,изток - врата-хол"	(All,LR,Roller_Shutters)	
+Rollershutter	LR_South_Shutter01	"Щора,южна - прозорец"	(All,LR,Roller_Shutters)	
+Group	AQ_Temperature_Chart
+Number	AQ_Temperature_Chart_Period	(AQ_Temperature_Chart,Persisted_items)	
+Number	AQ_Temp_Sensor1	"Температура [%.1f °C]"	<temperature>	(All,Sensors,Aquarium,Persisted_items,AQ_Temperature_Chart)		{ mqtt="<[mqtt:AQ_Temp_Sensor1:state:default" } //onewire="28.5E74D2050000#temperature"
+Switch	AQ_Heater1	"Нагревател"	<heater2>	(All,Heaters,Aquarium,Persisted_items)		{ mqtt=">[mqtt:AQ_Heater1:command:*:${command}]" } //gpio="pin:47 activelow:yes",  
+Switch	AQ_Cooler1	"Охладител"	<cooler2> (All,Coolers,Aquarium,Persisted_items) 	{ mqtt=">[mqtt:AQ_Cooler1:command:*:${command}]"}   // gpio="pin:45 activelow:yes",
+Switch	AQ_Light1	"Осветление"	<light>	(All,Aquarium,Lights,Persisted_items)		{ mqtt=">[mqtt:AQ_Light1:command:*:${command}]"}  //gpio="pin:60 activelow:yes", 
+Number	AQ_Set_Temperature	"Задаване температура на аквариум [%.1f °C]"	<temperature>	(AQ,Persisted_items)	
+Number	AQ_TempDelta1	"Температурна разлика за последния час [%.4f °C]"	<temperature>	(All,Aquarium,Persisted_items)	
+Number	AQ_TempAvg1	"Average1 [%.4f °C]"	<temperature>	(All,Aquarium,Persisted_items)
+Number	AQ_TempAvg2	"Average2 [%.4f °C]"	<temperature>	(All,Aquarium,Persisted_items)
+Number	AQ_Temp_MAX	"Максимална температура - аквариум [%.2f °C]"	<temperature>	(AQ,Persisted_items)	
+Number	AQ_Temp_MIN	"Минимална температура - аквариум [%.2f °C]"	<temperature>	(AQ,Persisted_items)	
+Group	Weather_Chart	(Weather)	
+Number	Weather_Temperature	"Outside Temperature [%.1f]"	<temperature>	(Weather_Chart)		{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_temperature.xsl)]" }
+Number	Weather_Temp_Max	"Todays Maximum [%.1f °C]"	<temperature>	(Weather_Chart)	
+Number	Weather_Temp_Min	"Todays Minimum [%.1f °C]"	<temperature>	(Weather_Chart)	
+DateTime	Weather_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
+DateTime	Date	"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ ntp="Europe/Berlin:de_DE" }
+
+Switch  IP_iPhone "iPhone" <network> (IP_Devices,Persisted_items) { nh="192.168.254.102" }
+Switch  IP_Nexus "GalaxyNexus" <network> (IP_Devices,Persisted_items) { nh="192.168.254.101" }
+Switch  IP_TV "TV" <network> (IP_Devices,Persisted_items) { nh="192.168.254.103" }
+Switch  IP_PC "PC" <network> (IP_Devices,Persisted_items) { nh="192.168.254.100", wol="192.168.254.100#BC:AE:C5:98:CB:61", exec=">[OFF:/bin/sh@@-c@@/hab/openhab/shutdown_pc 192.168.254.100 theater charly78]" }
+Switch  IP_Beaglebone "BeagleBone" <network> (IP_Devices,Persisted_items) { nh="192.168.254.30" }
+Switch  IP_Router "TP-Link" <network> (IP_Devices,Persisted_items) { nh="192.168.254.1" }
+Switch  IP_AQ_Arduino "Arduino Aquarium" <network> (IP_Devices,Persisted_items) { nh="192.168.254.35" }
+
+Number	Chart_Period	"Chart Period"	//used to setup the periods of charts as temporary variable
+Number	Chart_Period1	"Chart Period1" //used to setup the periods of charts as temporary variable
+Number	Chart_Period2	"Chart Period2" //used to setup the periods of charts as temporary variable
+
+//  SysInfo items
+ 
+Number loadAverage1min  "Load avg. 1min [%.1f]" (System,Persisted_items) { systeminfo="LoadAverage1Min:300000" }
+Number loadAverage5min  "Load avg. 5min [%.1f]" (System,Persisted_items) { systeminfo="LoadAverage5Min:300000" }
+Number loadAverage15min "Load avg. 15min [%.1f]"    (System,Persisted_items) { systeminfo="LoadAverage15Min:300000" }
+/**/
+Number uptime   "Uptime [%.1f]" (System,Persisted_items) { systeminfo="Uptime:300000" }
+String uptimeFormatted  "Uptime formatted [%s]" (System,Persisted_items) { systeminfo="UptimeFormatted:300000" }
+Number MemFreePercent   "Mem free [%.1f%%]" (System,Persisted_items) { systeminfo="MemFreePercent:300000" }
+Number MemUsedPercent   "Mem used [%.1f%%]" (System,Persisted_items) { systeminfo="MemUsedPercent:300000" }
+Number MemTotal "Mem total [%.1f]"  (System,Persisted_items) { systeminfo="MemTotal:300000" }
+Number OpenhabRealMem   "Real mem [%.1f]"   (System,Persisted_items) { systeminfo="ProcessRealMem:300000:$$" }
+Number OpenhabVirtualMem    "Virtual mem [%.1f]"    (System,Persisted_items) { systeminfo="ProcessVirtualMem:300000:$$" }
+Number OpenhabCpuPercent    "Cpu percent [%.1f%%]"  (System,Persisted_items) { systeminfo="ProcessCpuPercent:300000:$$" }
+Number OpenhabCpuSystem "CPU system [%.1f]" (System,Persisted_items) { systeminfo="ProcessCpuSystem:300000:$$" }
+Number OpenhabCpuUser   "CPU user [%.1f]"   (System,Persisted_items) { systeminfo="ProcessCpuUser:300000:$$" }
+Number OpenhabCpuTotal  "CPU total [%.1f]"  (System,Persisted_items) { systeminfo="ProcessCpuTotal:300000:$$" }
+Number OpenhabUptime    "Uptime [%d]"   (System,Persisted_items) { systeminfo="ProcessUptime:300000:$$" }
+String OpenhabUptimeFormatted   "Openhab Uptime form. [%s]" (System,Persisted_items) { systeminfo="ProcessUptimeFormatted:300000:$$" }
+Number DirUsage_root "Dir usage [%.1f]"  (System,Persisted_items) { systeminfo="DirUsage:300000:/" }
+/**/
+
+// PLAYGROUND

@@ -1,0 +1,7 @@
+#!/bin/bash
+echo 60 > /sys/class/gpio/unexport
+echo 20 > /sys/class/gpio/unexport
+#echo 44 > /sys/class/gpio/unexport
+echo 45 > /sys/class/gpio/unexport
+#echo 46 > /sys/class/gpio/unexport
+echo 47 > /sys/class/gpio/unexport

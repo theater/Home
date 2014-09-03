@@ -1,0 +1,108 @@
+sitemap MyHome label="Main Menu"
+{
+ 	
+///////////////////////////////////////////////////////////////////////	
+	
+//ROOMS	
+	Frame label="Стаи"{
+		Text label="Дневна стая" icon="living"{
+			Text item=LR_Heater1 icon="heater2"
+	 		Text item=LR_Heater1_mode
+	 		Text item=LR_Set_TemperatureON	 
+	 		Text item=LR_Temp_sensor1 valuecolor=[>25="orange",>17="green",<=17="blue"] {
+	 			Frame {
+					Switch item=Weather_Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week"]
+					Chart item=LR_Temp_sensor1 period=h refresh=600 visibility=[Weather_Chart_Period==0]
+					Chart item=LR_Temp_sensor1 period=D refresh=3600 visibility=[Weather_Chart_Period==1]
+					Chart item=LR_Temp_sensor1 period=W refresh=3600 visibility=[Weather_Chart_Period==2, Weather_Chart_Period=="Uninitialized"]
+				}
+	 		}
+	 		Text label="Температури на различните програми" icon="clock" {
+	 			Frame {
+	 				Text item=LR_Set_Temperature1
+	 				Text item=LR_Set_Temperature2
+	 				Text item=LR_Set_Temperature3
+	 			}	 		
+	 		}
+	 		Text label="Щори" icon="rollershutter" {
+	 			Text item=LR_East_Shutter01
+	 			Text item=LR_East_Shutter02
+	 			Text item=LR_East_Shutter03
+	 			Text item=LR_East_Shutter04
+	 			Text item=LR_South_Shutter01
+	 		}
+	 	}
+	 }	
+//AQUARIUM	
+	Frame label="Аквариум" {
+		Text label="Аквариум" icon="fish" {
+			Text item=AQ_Heater1 icon="heater2"
+			Text item=AQ_Cooler1 icon="cooler2"
+			Text item=AQ_Temp_Sensor1 valuecolor=[>28="red",>26="orange",>24="green",<=24="blue"] {
+				Frame {
+					Text item=AQ_Temp_MIN
+					Text item=AQ_Temp_MAX
+					Text item=AQ_TempDelta
+				}	
+				Frame {
+					Switch item=Weather_Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week"]
+					Chart item=AQ_Temperature_Chart period=h refresh=600 visibility=[Weather_Chart_Period==0]
+					Chart item=AQ_Temperature_Chart period=D refresh=3600 visibility=[Weather_Chart_Period==1]
+					Chart item=AQ_Temperature_Chart period=W refresh=3600 visibility=[Weather_Chart_Period==2, Weather_Chart_Period=="Uninitialized"]
+				}
+			}
+			Text item=AQ_Light1
+			Text label="Настройки" icon="settings" {
+				Text item=AQ_Set_Temperature
+			}	 	
+		}
+	}
+
+	
+//ADMINISTRATIVE INTERFACE	
+	Frame label="Administrative" {
+		Text label="Mass-control" icon="settings" {
+			Text item=Heaters icon="heater2"
+			Text item=ALL_Reinitialize icon="settings"
+			Group item=Heaters icon="heater2"
+			Group item=Coolers icon="cooler2"
+			Group item=Lights icon="light"
+			}
+		// IP DEVICES HEALTH CHECK
+		Text label="IP Devices" icon="network"{
+			Text item=IP_iPhone { Chart item=IP_iPhone period=D refresh=3600}
+			Text item=IP_Nexus { Chart item=IP_Nexus period=D refresh=3600}
+			Text item=IP_TV { Chart item=IP_TV period=D refresh=3600}
+			Text item=IP_PC { Chart item=IP_PC period=D refresh=3600}
+			Text item=IP_Beaglebone { Chart item=IP_Beaglebone period=D refresh=3600}
+			Text item=IP_Router { Chart item=IP_Router period=D refresh=3600}
+		}	
+	}
+////////////////////////////////////////////////////////////////////////
+
+
+  	Frame label="Weather" {
+		Text item=Weather_Temperature valuecolor=[Weather_LastUpdate=="Uninitialized"="lightgray",Weather_LastUpdate>90="lightgray",>30="red",>25="orange",>10="green",<=5="blue"] {
+		Frame {
+				Text item=Weather_Temp_Max valuecolor=[>30="red",>25="orange",>10="green",<=5="blue"]
+				Text item=Weather_Temp_Min valuecolor=[>30="red",>25="orange",>10="green",<=5="blue"]
+				Text item=Weather_LastUpdate visibility=[Weather_LastUpdate>30] valuecolor=[Weather_LastUpdate>120="orange", Weather_LastUpdate>300="red"]
+			}
+			Frame {
+				Switch item=Weather_Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week"]
+				Chart item=Weather_Chart period=h refresh=600 visibility=[Weather_Chart_Period==0]
+				Chart item=Weather_Chart period=D refresh=3600 visibility=[Weather_Chart_Period==1]
+				Chart item=Weather_Chart period=W refresh=3600 visibility=[Weather_Chart_Period==2, Weather_Chart_Period=="Uninitialized"]
+			}
+		}
+	} /* */
+ 	Frame label="Date" {
+		Text item=Date	
+	} /* */
+	
+ /* 	Frame label="TEST MISC STUFF" {
+		Text item=gpio60 icon="light"
+		Text item=DS18Test
+	}*/
+	
+}

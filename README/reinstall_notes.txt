@@ -1,0 +1,56 @@
+setup IP address via /etc/network/interfaces
+add line:
+iface eth0 inet static address 192.168.254.30 netmask 255.255.255.0 network 192.168.254.0 gateway 192.168.254.1
+#####  in version 7.4 of debian image there's a bug which does not allow to setup static IP from the networking so DHCP reservation has been used.
+
+remove all X-related stuff to get 500MB free space:
+http://raspberrypi.stackexchange.com/questions/4745/how-to-uninstall-x-server-and-desktop-manager-when-running-as-headless-server
+in essence :) :
+ apt-get remove --auto-remove --purge libx11-.*
+ apt-get autoremove 
+ 
+For updated Mosquitto (MQTT broker):
+wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key
+sudo apt-key add mosquitto-repo.gpg.key
+sudo wget http://repo.mosquitto.org/debian/mosquitto-wheezy.list
+apt-get update
+ 
+ 
+Install some stuff:
+#apt-get update
+apt-get install owserver owftpd owhttpd owfs owshell ntp mosquitto samba locate
+apt-get install libjna-java   (for enabling GPIO in OH)
+
+add DNS servers to /etc/resolv.conf
+
+
+
+add the following to /root/.profile
+export JAVA_HOME=/hab/java
+export PATH=$PATH:/sbin:/usr/sbin:/bin:/usr/bin:$JAVA_HOME/bin
+export TZ="EET"
+dpkg-reconfigure tzdata
+
+See /etc/default/capemgr if you want to add more capes/device overlays
+add them inside ! ! !
+uncomment the following from /boot/uBoot/uEnv.txt in order to disable the HDMI...
+##Disable HDMI
+cape_disable=capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN
+
+check if NTP working:
+ntpq -p
+
+
+add the following lines to /etc/owfs.conf:
+server: usb = all
+server: w1
+
+Configure mosquitto security and log section:
+log_type warning
+password_file /etc/mosquitto/mosquitto.pwd
+log_dest file /var/log/mosquitto.log
+
+
+#### side note - how to add debugging add lines to logback_debug.xml
+<logger name="org.openhab.binding.mqtt" level="DEBUG" />
+<logger name="org.openhab.io.transport.mqtt" level="DEBUG" />
