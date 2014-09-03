@@ -3,7 +3,7 @@ Make sure to disable UDP from uipethernet-conf.h  ! ! !
 Otherwise the program gets too big :(
 
 Aquarium_MQTT_PIR - test sketch with all aquarium functionality plus some logics for PIR room detection.
-Aqiarium_MQTT - the first version of the sketch - saved for looking back if needed
+Aqiarium_MQTT_orig - the first version of the sketch - saved for looking back if needed
 Aquarium_RELAYS - version with inverse logic (0 or low level activates the relays of chinese relay boards)
 Aquarium_SSR - version with normal logic (1 or high level activates the SSRs of my board)
 
