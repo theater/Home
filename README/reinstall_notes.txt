@@ -18,8 +18,7 @@ apt-get update
  
 Install some stuff:
 #apt-get update
-apt-get install owserver owftpd owhttpd owfs owshell ntp mosquitto samba locate
-apt-get install libjna-java   (for enabling GPIO in OH)
+apt-get install owserver owftpd owhttpd owfs owshell ntp mosquitto samba locate mysql-server libjna-java
 
 add DNS servers to /etc/resolv.conf
 
