@@ -67,25 +67,32 @@ void OneWireGetAndReport() {
     //do transformations and post to MQTT
     char strConvert[10];
     // 1-wire HERE
-    dtostrf(sensors.getTempCByIndex(0),6,3,strConvert);
+    if(sensors.getTempCByIndex(0)>-20) { 
+        dtostrf(sensors.getTempCByIndex(0),6,3,strConvert);
 //      Serial.println("Temperature for AQ temp Sensor is: ");   // print AQ temperature
 //      Serial.println(sensors.getTempCByIndex(0));                  // to serial
-      MQTT_Client.publish("AQ_Temp_Sensor1",strConvert);  // send it to MQTT broker
+        MQTT_Client.publish("AQ_Temp_Sensor1",strConvert);  // send it to MQTT broker
+    }
+    if(sensors.getTempCByIndex(1)>-20) { 
     dtostrf(sensors.getTempCByIndex(1),6,3,strConvert);  
 //      Serial.println("\nTemperature for LR-1wire is: "); // print living room temperature
 //      Serial.println(sensors.getTempCByIndex(1));        //to serial
       MQTT_Client.publish("LR_Temp_Sensor1",strConvert); // send to MQTT
-
+    }
     // DHT11 here...
+    if(DHT.humidity>0) {
     dtostrf(DHT.humidity,2,0,strConvert);
 //      Serial.println("\nHumidity DHT11 is: "); // print DHT11 humidity
 //      Serial.println(DHT.humidity);        //to serial
       MQTT_Client.publish("LR_Humidity_sensor1",strConvert); // send to MQTT
+    }
+    if(DHT.temperature>-20) {
        dtostrf(DHT.temperature,4,2,strConvert);
 //      Serial.println("\nTemperature DHT11 is: "); // print DHT11 living room temperature
 //      Serial.println(DHT.temperature);        //to serial
       MQTT_Client.publish("LR_Temp_Sensor2",strConvert); // send to MQTT
  //     Serial.println("FreeRAM:");Serial.println(freeRam());
+    }
   }
 }/**/
   
