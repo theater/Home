@@ -2,11 +2,14 @@
 Strategies {
 	everyMinute : "0 * * * * ?"
 	everyFiveMinutes : "0 */5 * * * ?"
+	everyThirtyMinutes : "0 */30 * * * ?"
+	everyHour : "0 0 * * * ?"
+	everyDay : "0 0 0 * * ?"
 	default = everyChange 
 }
 
 Items {
 	//DemoSwitch,NoOfLights,Window_GF_Toilet,Heating* : strategy = everyChange, everyMinute, restoreOnStartup
 	// let's only store temperature values in rrd
-	Persisted_items*,Weather_Chart* : strategy = everyFiveMinutes, restoreOnStartup
+	Persisted_items*,Weather_Chart* : strategy = everyHour, everyFiveMinutes, restoreOnStartup
 }

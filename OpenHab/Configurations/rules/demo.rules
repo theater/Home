@@ -71,6 +71,7 @@ rule "Initialize states of variables"
 	sendCommand(AQ_Heater1,OFF)  // default aquarium heater off
 	sendCommand(AQ_Cooler1,OFF)  // default aquarium cooler off
 	sendCommand(AQ_Light1,OFF)  // default aquarium light off
+	postUpdate(AQ_Logics_mode,2)  // default mode is AUTO
 //	postUpdate(AQ_Set_Temperature,25) // 25C initial aquarium temp value
 //	postUpdate(AQ_TempDelta,2) 
 	logDebug("RULES","System Initialization ENDS HERE")
@@ -106,15 +107,20 @@ then
 	logDebug("RULES","Persistence demo ends HERE")
 end /* */
 
- 
+/////////////////////////////////////////////////////////////////////////////////////////// 
 // Creates an item that stores the last update time of this item
-rule "Records last weather update time"
-when
-  Item Weather_Temperature received update
-then
-  postUpdate(Weather_LastUpdate, new DateTimeType())
-  logDebug("RULES","Record last update time ends HERE")
-end
+rule "Weather update time" 
+when Item Weather_Temperature received update then postUpdate(Weather_LastUpdate, new DateTimeType())end
+
+rule "LR temperature sensor update time"
+when  Item LR_Temp_sensor1 received update then postUpdate(LR_Temp_sensor1_LastUpdate, new DateTimeType()) end
+
+rule "LR Humidity update time"
+when  Item LR_Humidity_sensor1 received update then postUpdate(LR_Humidity_sensor1_LastUpdate, new DateTimeType()) end
+
+rule "Aquarium temperature update time"
+when  Item AQ_Temp_sensor1 received update then postUpdate(AQ_Temp_Sensor1_LastUpdate, new DateTimeType()) end
+
 /* */
 ////////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -254,40 +260,35 @@ rule "LR Heater Set Temperature change"
 end
 
 rule "Calculate AQ delta"
-	when Time cron"0 0 * * * ?"
+	when Time cron"0 1 * * * ?"
 	then
-val tmp12 = AQ_Temp_Sensor1.historicState(now.minusMinutes(60)).state as DecimalType
-val tmp11 = AQ_Temp_Sensor1.historicState(now.minusMinutes(55)).state as DecimalType
-val tmp10 = AQ_Temp_Sensor1.historicState(now.minusMinutes(50)).state as DecimalType
-val tmp9 = AQ_Temp_Sensor1.historicState(now.minusMinutes(45)).state as DecimalType
-val tmp8 = AQ_Temp_Sensor1.historicState(now.minusMinutes(40)).state as DecimalType
-val tmp7 = AQ_Temp_Sensor1.historicState(now.minusMinutes(35)).state as DecimalType
-val tmp6 = AQ_Temp_Sensor1.historicState(now.minusMinutes(30)).state as DecimalType
-val tmp5 = AQ_Temp_Sensor1.historicState(now.minusMinutes(25)).state as DecimalType
-val tmp4 = AQ_Temp_Sensor1.historicState(now.minusMinutes(20)).state as DecimalType
-val tmp3 = AQ_Temp_Sensor1.historicState(now.minusMinutes(15)).state as DecimalType
-val tmp2 = AQ_Temp_Sensor1.historicState(now.minusMinutes(10)).state as DecimalType
-val tmp1 = AQ_Temp_Sensor1.historicState(now.minusMinutes(5)).state as DecimalType
-		var delta1 = (tmp1 + tmp2 + tmp3 + tmp4 +tmp5 +tmp6)/6 - (tmp7+tmp8+tmp9+tmp10+tmp11+tmp12)/6 
-		val avg1 = (tmp7+tmp8+tmp9+tmp10+tmp11+tmp12)/6
-		val avg2 = (tmp2+tmp3)/2
+val tmp2 = AQ_Temp_Sensor1.averageSince(now.minusMinutes(90),"mysql").floatValue
+val tmp1 = AQ_Temp_Sensor1.averageSince(now.minusMinutes(15),"mysql").floatValue
+		val delta1 = tmp1 - tmp2  
 		postUpdate(AQ_TempDelta1,delta1)	
-		postUpdate(AQ_TempAvg1,avg1)
-		postUpdate(AQ_TempAvg2,avg2)
+//		logInfo("RULES","Tmp1=" + tmp1)
 end
 
 /***************************AQUARIUM *********************************/
 rule "Aquarium logics"
-when Time cron "0 */30 * * * ?"  //do the check every 15 min
+when Time cron "0 */30 * * * ?" or Item AQ_Logics_mode received command or Item AQ_Temp_Sensor1 received update
 then
 var float aq_temp_sensor=new Float(AQ_Temp_Sensor1.state.toString())
 var float aq_temp_set_temp=new Float(AQ_Set_Temperature.state.toString())
+val lr_temp_sensor1=LR_Temp_sensor1.state as DecimalType 
 //If aquarium temp is lower than the set temperature - heat, otherwise do not heat
 val delta1 = AQ_TempDelta1.state as DecimalType
-val lr_temp_sensor1= LR_Temp_sensor1.state as DecimalType
 //val delta2 = AQ_TempDelta2.state as DecimalType
+switch (AQ_Logics_mode.state) {
+	case 0: {
+		sendCommand(AQ_Heater1,OFF)
+		sendCommand(AQ_Cooler1,OFF)
+		sendCommand(AQ_Light1,OFF)
+	}
+	case 1: logDebug("RULES","AQUARIUM: Mode set to manual")
+	default: {
 	if ((aq_temp_sensor!="UNDEFINED"||aq_temp_sensor!="NULL")&&(AQ_TempDelta1!="UNDEFINED"||AQ_TempDelta1!="NULL")) { 
-		if ((aq_temp_sensor<aq_temp_set_temp)&&(delta1<-0.20)) {  
+		if (((aq_temp_sensor<aq_temp_set_temp)&&(lr_temp_sensor1<aq_temp_set_temp)||(aq_temp_sensor<aq_temp_set_temp-1))&&((delta1>-1.5)&&(delta1<1.5))) {  
 			sendCommand(AQ_Heater1,ON)
 		} else {
 			sendCommand(AQ_Heater1,OFF)
@@ -304,6 +305,8 @@ val lr_temp_sensor1= LR_Temp_sensor1.state as DecimalType
 		}
 	}
 	logDebug("RULES","Aquarium logics end HERE")
+	}
+	}
 end
 /* 
 rule "Refined aquarium logics triggered by sensor change"
@@ -333,7 +336,7 @@ end
 rule "Aquarium light on"  // between 19:00 and 0:00 on every 5 min check
 when Time cron "0 */5 19-23 * * ?" 
 then 
-if(AQ_Light1.state==OFF) {
+if(AQ_Light1.state==OFF&&AQ_Logics_mode.state==2) {
 	sendCommand(AQ_Light1,ON) 
 }
 end
