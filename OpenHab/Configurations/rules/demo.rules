@@ -271,7 +271,7 @@ end
 
 /***************************AQUARIUM *********************************/
 rule "Aquarium logics"
-when Time cron "0 */30 * * * ?" or Item AQ_Logics_mode received command or Item AQ_Temp_Sensor1 received update
+when Time cron "0 */15 * * * ?" or Item AQ_Logics_mode received command or Item AQ_Temp_Sensor1 changed
 then
 var float aq_temp_sensor=new Float(AQ_Temp_Sensor1.state.toString())
 var float aq_temp_set_temp=new Float(AQ_Set_Temperature.state.toString())
@@ -281,12 +281,14 @@ val delta1 = AQ_TempDelta1.state as DecimalType
 //val delta2 = AQ_TempDelta2.state as DecimalType
 switch (AQ_Logics_mode.state) {
 	case 0: {
+		logDebug("RULES","AQUARIUM: Mode set to OFF")
 		sendCommand(AQ_Heater1,OFF)
 		sendCommand(AQ_Cooler1,OFF)
 		sendCommand(AQ_Light1,OFF)
 	}
 	case 1: logDebug("RULES","AQUARIUM: Mode set to manual")
 	default: {
+	logDebug("RULES","AQUARIUM: Mode set to AUTO")
 	if ((aq_temp_sensor!="UNDEFINED"||aq_temp_sensor!="NULL")&&(AQ_TempDelta1!="UNDEFINED"||AQ_TempDelta1!="NULL")) { 
 		if (((aq_temp_sensor<aq_temp_set_temp)&&(lr_temp_sensor1<aq_temp_set_temp)||(aq_temp_sensor<aq_temp_set_temp-1))&&((delta1>-1.5)&&(delta1<1.5))) {  
 			sendCommand(AQ_Heater1,ON)

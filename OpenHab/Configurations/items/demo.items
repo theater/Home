@@ -18,13 +18,13 @@ Number	ALL_Reinitialize	"Initialize system"	(All)
 //  Living room
 Switch	LR_Heater1	"Отопление - дневна"	<heater2>	(All,Heaters,LR)	
 Number	LR_Heater1_mode	"Режим"	<network>	(All,Modes,LR,Persisted_items)	
-Number	LR_Temp_sensor1	"Т °C в дневна [%.1f °C]"	<temperature>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Temp_Sensor1:state:default" } // onewire="28.FF5959201400#temperature"	 
+Number	LR_Temp_sensor1	"Дневна стая [%.1f °C]"	<temperature>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Temp_Sensor1:state:default" } // onewire="28.FF5959201400#temperature"	 
 Number	LR_Temp_sensor2	"Т °C в дневна DHT11 [%.1f °C]"	<temperature>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Temp_Sensor2:state:default" } // onewire="28.FF5959201400#temperature"
 Number	LR_Humidity_sensor1	"Влажност в дневна [%.1f %%]"	<temperature>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Humidity_sensor1:state:default" } // onewire="28.FF5959201400#temperature"
-Number	LR_Set_TemperatureON	"Т °C в дневна ръчен режим [%.1f °C]"	<temperature>	(All,LR,Persisted_items)	
-Number	LR_Set_Temperature1	"Т °C в дневна през работно време [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
-Number	LR_Set_Temperature2	"Т °C в дневна когато сме вкъщи [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
-Number	LR_Set_Temperature3	"Т °C в дневна през нощта [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
+Number	LR_Set_TemperatureON	"Manual [%.1f °C]"	<temperature>	(All,LR,Persisted_items)	
+Number	LR_Set_Temperature1	"Work [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
+Number	LR_Set_Temperature2	"Home [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
+Number	LR_Set_Temperature3	"Sleep [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
 //Switch	LR_Presense_1	"Има ли някой :)"	<parents>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Presense_1:state:default" } // onewire="28.FF5959201400#temperature"
 Rollershutter	LR_East_Shutter01	"Щора,изток - прозорец-кухня"	(All,LR,Roller_Shutters)	
 Rollershutter	LR_East_Shutter02	"Щора,изток - врата-кухня"	(All,LR,Roller_Shutters)	
@@ -38,12 +38,12 @@ DateTime	LR_Humidity_sensor1_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
 //  Aquarium
 Group	AQ_Temperature_Chart
 Number	AQ_Temperature_Chart_Period	(AQ_Temperature_Chart,Persisted_items)	
-Number	AQ_Temp_Sensor1	"Температура [%.2f °C]"	<temperature>	(All,Sensors,Aquarium,Persisted_items,AQ_Temperature_Chart)		{ mqtt="<[mqtt:AQ_Temp_Sensor1:state:default" } //onewire="28.5E74D2050000#temperature"
-Number AQ_Logics_mode "Режим - аквариум" <network> (All,Modes,AQ,Persisted_items)
+Number	AQ_Temp_Sensor1	"Аквариум [%.2f °C]"	<temperature>	(All,Sensors,Aquarium,Persisted_items,AQ_Temperature_Chart)		{ mqtt="<[mqtt:AQ_Temp_Sensor1:state:default" } //onewire="28.5E74D2050000#temperature"
+Number AQ_Logics_mode "Режим" <network> (All,Modes,AQ,Persisted_items)
 Switch	AQ_Heater1	"Нагревател"	<heater2>	(All,Heaters,Aquarium,Persisted_items)		{ mqtt=">[mqtt:AQ_Heater1:command:*:${command}]" } //gpio="pin:47 activelow:yes",  
 Switch	AQ_Cooler1	"Охладител"	<cooler2> (All,Coolers,Aquarium,Persisted_items) 	{ mqtt=">[mqtt:AQ_Cooler1:command:*:${command}]"}   // gpio="pin:45 activelow:yes",
 Switch	AQ_Light1	"Осветление"	<light>	(All,Aquarium,Lights,Persisted_items)		{ mqtt=">[mqtt:AQ_Light1:command:*:${command}]"}  //gpio="pin:60 activelow:yes", 
-Number	AQ_Set_Temperature	"Задаване температура на аквариум [%.1f °C]"	<temperature>	(AQ,Persisted_items)	
+Number	AQ_Set_Temperature	"Зададена температура[%.1f °C]"	<temperature>	(AQ,Persisted_items)	
 Number	AQ_TempDelta1	"Температурна разлика за последния час [%.4f °C]"	<temperature>	(All,Aquarium,Persisted_items)	
 Number	AQ_Temp_MAX	"Максимална температура - аквариум [%.2f °C]"	<temperature>	(AQ,Persisted_items)	
 Number	AQ_Temp_MIN	"Минимална температура - аквариум [%.2f °C]"	<temperature>	(AQ,Persisted_items)
