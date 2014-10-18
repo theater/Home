@@ -11,7 +11,7 @@ long packets_lost=0;
 long packets_sent=0;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   printf_begin();
   pinMode(LED, OUTPUT);
   radio.begin();

@@ -19,7 +19,7 @@ struct sensor_struct{
 };
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   printf_begin();
   radio.begin();
   radio.setChannel(1);

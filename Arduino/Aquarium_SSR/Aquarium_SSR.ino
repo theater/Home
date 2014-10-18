@@ -172,7 +172,7 @@ void loop()
 {
  if (!MQTT_Connect()){
     ManualAQLogics();  
-    delay(AQ_MANUAL_INTERVAL); // if not connected wait 30sec before next attempt
+    delay(3000); // if not connected wait 30sec before next attempt
     ethClient.stop();
     Ethernet.begin(mac,myIP);
   } else {
