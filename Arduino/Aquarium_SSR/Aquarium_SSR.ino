@@ -4,13 +4,14 @@
 #include <OneWire.h>
 #include <dht.h>
 
+//Digital pins 10,11,12,13 are used for ethernet shield ! ! !
 #define ONE_WIRE_PIN 9  // Data wire is plugged into pin 4 on the Arduino
 #define DHT11_PIN 8  //DHT11
 #define AQ_LIGHTS1_PIN 7  //AQ_Lights1
 #define AQ_HEATER1_PIN 6 //AQ_Heater1
 #define AQ_COOLER1_PIN 5  //AQ_Cooler1
 #define OW_REPORTING_INTERVAL 60000  // report 1-wire sensors data each minute to MQTT broker
-#define AQ_MANUAL_INTERVAL 90000  // Aquarium manual function check interval will be on each 15 min
+#define AQ_MANUAL_INTERVAL 900000  // Aquarium manual function check interval will be on each 15 min
 #define AQ_Set_Temperature_manual 25 // Set temperature in manual mode (if no MQTT connection available)
 
 byte server[] = { 192,168,254,30 };
@@ -43,6 +44,7 @@ void gpio(int dPin,boolean state) {
 
 int MQTT_Connect () {
   if (!MQTT_Client.connected()) {
+    MQTT_Client.disconnect();
     if (MQTT_Client.connect("ArduinoNANO-AQ")) {
       MQTT_Client.publish("Arduino","Arduino-AQ is UP");
       MQTT_Client.subscribe("AQ_Light1");
@@ -154,7 +156,7 @@ int freeRam () {
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   pinMode(AQ_LIGHTS1_PIN, OUTPUT);      // sets the digital pin as output
   pinMode(AQ_HEATER1_PIN, OUTPUT);      // sets the digital pin as output    
   pinMode(AQ_COOLER1_PIN, OUTPUT);      // sets the digital pin as output
@@ -172,7 +174,7 @@ void loop()
 {
  if (!MQTT_Connect()){
     ManualAQLogics();  
-    delay(3000); // if not connected wait 30sec before next attempt
+    delay(AQ_MANUAL_INTERVAL); // if not connected wait 30sec before next attempt
     ethClient.stop();
     Ethernet.begin(mac,myIP);
   } else {
