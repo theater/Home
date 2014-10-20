@@ -8,7 +8,7 @@
 
 #define PUBLISH_INTERVAL 60000  // Publish data each minute to MQTT broker
 #define MANUAL_INTERVAL 300000  // Manual function check interval will be on each 15 min
-long SEALEVEL_PRESSURE=101300;  // get this information from local weather stations eventually
+float SEALEVEL_PRESSURE=101300;  // get this information from local weather stations eventually
 byte server[] = { 192,168,254,30 };
 unsigned long now;
 unsigned long sentTime=0;
@@ -76,9 +76,10 @@ void callback(char* topic, byte* payload, unsigned int length) {
 // ####### byte* to String transformation ends here  
 //  Serial.print("\n Inside callback:");
 //  Serial.println(cPayload);
-  SEALEVEL_PRESSURE=atol(cPayload)*100;
+  SEALEVEL_PRESSURE=atof(cPayload)*100;
 // #### Real work/Logics start here. Using IFs to destinguish for the different MQTT subscriptions/relays (unfortunalte string not allowed in switch operator) :(    
 /**/
+//  Serial.println(SEALEVEL_PRESSURE);
 }
 
 int freeRam () {

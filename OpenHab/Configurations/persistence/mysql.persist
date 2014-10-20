@@ -12,4 +12,5 @@ Items {
 	//DemoSwitch,NoOfLights,Window_GF_Toilet,Heating* : strategy = everyChange, everyMinute, restoreOnStartup
 	// let's only store temperature values in rrd
 	Persisted_items*,Weather_Chart* : strategy = everyHour, everyFiveMinutes, restoreOnStartup
+	Sensors* : strategy = everyHour, everyChange, restoreOnStartup
 }

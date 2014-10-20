@@ -1,7 +1,7 @@
 sitemap demo label="Main Menu"
 {
 	Frame label="Стаи"  {
-		Text item=LR_Temp_sensor1 icon="living" valuecolor=[ LR_Temp_sensor1_LastUpdate>120="lightgray", >25="orange", >17="green", <=17="blue"]   {		
+		Text item=LR_Temp_sensor1 icon="sofa" valuecolor=[ LR_Temp_sensor1_LastUpdate>120="lightgray", >25="orange", >17="green", <=17="blue"]   {		
 /* 			Text item=LR_Presense_1 {
 				Chart item=LR_Presense_1 period=D refresh=3600
 			} */ 			
@@ -108,7 +108,20 @@ sitemap demo label="Main Menu"
 			Frame  {
 				Text item=Weather_Temp_Max valuecolor=[>30="red", >25="orange", >10="green", <=5="blue"] 				
 				Text item=Weather_Temp_Min valuecolor=[>30="red", >25="orange", >10="green", <=5="blue"] 				
-				Text item=Weather_LastUpdate valuecolor=[Weather_LastUpdate>120="orange", Weather_LastUpdate>300="red"]  visibility=[Weather_LastUpdate>30] 				
+				//Text item=Weather_LastUpdate valuecolor=[Weather_LastUpdate>120="orange", Weather_LastUpdate>300="red"]  visibility=[Weather_LastUpdate>30] 				
+				Text item=Weather_pressure valuecolor=[Weather_pressure_LastUpdate>120="lightgray", >=943="orange", <943="green", <935="blue"] {
+					Chart item=Weather_pressure period=W refresh=3600
+				}
+				Text item=Weather_temperature1 valuecolor=[Weather_temperature1_LastUpdate>120="lightgray",>30="red", >25="orange", >10="green", <=5="blue"] {
+					Chart item=Weather_temperature1 period=W refresh=3600
+				}
+				Text item=Weather_altitude valuecolor=[Weather_altitude_LastUpdate>120="lightgray",>0="green"]
+				Text item=Weather_pressure_reported valuecolor=[Weather_pressure_LastUpdate>120="lightgray", >=1020="orange", <1020="green", <1000="blue"] {
+					Chart item=Weather_pressure_reported period=W refresh=3600
+				}
+				Text item=Weather_humidity valuecolor=[Weather_pressure_LastUpdate>120="lightgray", <50="orange", >50="green", >80="blue"] {
+					Chart item=Weather_humidity period=W refresh=3600
+				}  
 			}			
 			Frame  {
 				Switch item=Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week", 3="Month"] 				
@@ -119,8 +132,10 @@ sitemap demo label="Main Menu"
 			}			
 		}		
 	}	
-	Frame label="Administrative"  {
-		Text label="Charts" icon="chart"{
+	Frame label="Administrative" {
+		Text label="Administrative" icon="settings" {
+			Frame label="Multi admin tasks" {
+			Text label="Charts" icon="chart"{
 				Switch item=Chart_Period1 label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"] 	
 				
 				Chart item=LR_Temp_sensor1 period=h refresh=600 visibility=[Chart_Period==0] 					
@@ -139,64 +154,75 @@ sitemap demo label="Main Menu"
 				Chart item=Weather_Temperature period=D refresh=3600 visibility=[Chart_Period==1] 				
 				Chart item=Weather_Temperature period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
 				Chart item=Weather_Temperature period=M refresh=3600 visibility=[Chart_Period==3]
-				Chart item=Weather_Temperature period=M refresh=3600 visibility=[Chart_Period==4]
-								 			
-		}	
-		Text label="Mass-control" icon="settings"  {
-			Switch item=Heaters icon="heater2" mappings=[OFF="All heaters Off"] 			
-			Switch item=ALL_Reinitialize icon="settings" mappings=[1="System initialize"] 			
-			Group item=Heaters icon="heater2"  {
-				Switch item=LR_Heater1 				
-				Switch item=AQ_Heater1 				
-			}			
-			Group item=Coolers icon="cooler2"  {
-				Switch item=AQ_Cooler1 				
-			}			
-			Group item=Lights icon="light"  {
-				Switch item=AQ_Light1 				
-			}			
- 			
-		}
-		Text label="Monitoring" icon="settings" {		
-			Text label="IP Devices" icon="network"  {
-				Text item=IP_iPhone  {
-					Chart item=IP_iPhone period=W refresh=3600				
+				Chart item=Weather_Temperature period=M refresh=3600 visibility=[Chart_Period==4]					 			
+			}	
+			Text label="Mass-control" icon="settings"  {
+				Switch item=Heaters icon="heater2" mappings=[OFF="All heaters Off"] 			
+				Group item=Heaters icon="heater2"  {
+					Switch item=LR_Heater1 				
+					Switch item=AQ_Heater1 				
 				}			
-				Text item=IP_Nexus  {
-					Chart item=IP_Nexus period=W refresh=3600				
+				Group item=Coolers icon="cooler2"  {
+					Switch item=AQ_Cooler1 				
 				}			
-				Text item=IP_TV  {
-					Chart item=IP_TV period=W refresh=3600				
+				Group item=Lights icon="light"  {
+					Switch item=AQ_Light1 				
 				}			
-				Switch item=IP_PC 			
-				Text item=IP_Beaglebone {
-					Chart item=IP_Beaglebone period=W refresh=3600				
-				}			
-				Text item=IP_Router {
-					Chart item=IP_Router period=W refresh=3600				
+ 				
+			}
+			Text label="Monitoring" icon="settings" {		
+				Text label="IP Devices" icon="network"  {
+					Text item=IP_iPhone  {
+						Chart item=IP_iPhone period=W refresh=3600				
+					}			
+					Text item=IP_Nexus  {
+						Chart item=IP_Nexus period=W refresh=3600				
+					}			
+					Text item=IP_TV  {
+						Chart item=IP_TV period=W refresh=3600				
+					}			
+					Switch item=IP_PC 			
+					Text item=IP_Beaglebone {
+						Chart item=IP_Beaglebone period=W refresh=3600				
+					}			
+					Text item=IP_Router {
+						Chart item=IP_Router period=W refresh=3600				
+					}
+					Text item=IP_AQ_Arduino {
+						Chart item=IP_AQ_Arduino period=W refresh=3600				
+					}				
+					Text item=IP_Weather_Station_Arduino {
+						Chart item=IP_Weather_Station_Arduino period=W refresh=3600				
+					}								
 				}
-				Text item=IP_AQ_Arduino {
-					Chart item=IP_AQ_Arduino period=W refresh=3600				
-				}						
+				Group item=System icon="settings" {
+					Text item=DirUsage_root valuecolor=[<=1450="green", >1450="orange", >1530="red"]  { Chart item=DirUsage_root period=M refresh=3600 }
+					Text item=MemFreePercent valuecolor=[>20="green", <20="orange", <10="red"]{ Chart item=MemFreePercent period=M refresh=3600 }
+					Text item=MemUsedPercent valuecolor=[<80="green", >90="red",>80="orange"]{ Chart item=MemUsedPercent period=M refresh=3600 }
+//					Text item=MemTotal { Chart item=MemTotal period=M refresh=3600 }
+//					Text item=OpenhabRealMem { Chart item=OpenhabRealMem period=M refresh=3600 }
+//					Text item=OpenhabVirtualMem { Chart item=OpenhabVirtualMem period=M refresh=3600 }
+					Text item=OpenhabCpuPercent valuecolor=[<80="green", >80="orange", >90="red"] { Chart item=OpenhabCpuPercent period=M refresh=3600 }
+//					Text item=OpenhabCpuSystem { Chart item=OpenhabCpuSystem period=M refresh=3600 }
+//					Text item=OpenhabCpuUser { Chart item=OpenhabCpuUser period=M refresh=3600 }
+//					Text item=OpenhabCpuTotal { Chart item=OpenhabCpuTotal period=M refresh=3600 }
+					Text item=uptimeFormatted { Chart item=uptime period=M refresh=3600 }
+					Text item=OpenhabUptimeFormatted { Chart item=OpenhabUptime period=M refresh=3600 }
+				}
+			}	 		
 			}
-			Group item=System icon="settings" {
-				Text item=DirUsage_root { Chart item=DirUsage_root period=M refresh=3600 }
-				Text item=MemFreePercent { Chart item=MemFreePercent period=M refresh=3600 }
-				Text item=MemUsedPercent { Chart item=MemUsedPercent period=M refresh=3600 }
-				Text item=MemTotal { Chart item=MemTotal period=M refresh=3600 }
-				Text item=OpenhabRealMem { Chart item=OpenhabRealMem period=M refresh=3600 }
-				Text item=OpenhabVirtualMem { Chart item=OpenhabVirtualMem period=M refresh=3600 }
-				Text item=OpenhabCpuPercent { Chart item=OpenhabCpuPercent period=M refresh=3600 }
-				Text item=OpenhabCpuSystem { Chart item=OpenhabCpuSystem period=M refresh=3600 }
-				Text item=OpenhabCpuUser { Chart item=OpenhabCpuUser period=M refresh=3600 }
-				Text item=OpenhabCpuTotal { Chart item=OpenhabCpuTotal period=M refresh=3600 }
-				Text item=uptimeFormatted { Chart item=uptime period=M refresh=3600 }
-				Text item=OpenhabUptimeFormatted { Chart item=OpenhabUptime period=M refresh=3600 }
+			Frame label="Commands/executions" {
+				Switch item=CleanUpLogs mappings=[ON="ZeroLogs"]
+				Switch item=BackupSystem mappings=[ON="Backup"]
+				Switch item=ALL_Reinitialize icon="settings" mappings=[1="System initialize"]
 			}
-		}	
+		}
 	}	
 	
 	Frame label="Date"  {
 		Text item=Date 		
+	}	
+	Frame label="Playground"  {
+		Switch item=SendMail mappings=[1="ON",0="0FF"] 		
 	}	
 }

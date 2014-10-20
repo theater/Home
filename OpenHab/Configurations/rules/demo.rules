@@ -72,6 +72,9 @@ rule "Initialize states of variables"
 	sendCommand(AQ_Cooler1,OFF)  // default aquarium cooler off
 	sendCommand(AQ_Light1,OFF)  // default aquarium light off
 	postUpdate(AQ_Logics_mode,2)  // default mode is AUTO
+	sendCommand(CleanUpLogs,OFF)  // default aquarium heater off
+	sendCommand(BackupSystem,OFF)  // default aquarium heater off
+	postUpdate(Weather_pressure_set,1013); //default value for altimeter at sealevel = 1013hPA
 //	postUpdate(AQ_Set_Temperature,25) // 25C initial aquarium temp value
 //	postUpdate(AQ_TempDelta,2) 
 	logDebug("RULES","System Initialization ENDS HERE")
@@ -120,6 +123,20 @@ when  Item LR_Humidity_sensor1 received update then postUpdate(LR_Humidity_senso
 
 rule "Aquarium temperature update time"
 when  Item AQ_Temp_sensor1 received update then postUpdate(AQ_Temp_Sensor1_LastUpdate, new DateTimeType()) end
+
+rule "Weather pressure BMP180 update time"
+when  Item Weather_pressure received update then postUpdate(Weather_pressure_LastUpdate, new DateTimeType()) end
+
+rule "Weather altitude BMP180 update time"
+when  Item Weather_altitude received update then postUpdate(Weather_altitude_LastUpdate, new DateTimeType()) end
+
+rule "Weather temperature BMP180 update time"
+when  Item Weather_temperature1 received update then postUpdate(Weather_temperature1_LastUpdate, new DateTimeType()) end
+
+//rule "Weather pressure XSLT"
+//when  Item Weather_pressure_reported received update then postUpdate(Weather_temperature1_LastUpdate, new DateTimeType()) end
+
+
 
 /* */
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -353,4 +370,69 @@ logDebug("RULES","Aquarium light on ends HERE")
 end
 
 
+//  here we track some statistics and send mail if anything bad happens
+rule "Monitoring logics and notifications"
+when Time cron "0 */15 * * * ?" or Item MemUsedPercent received update or Item DirUsage_root received update or Item OpenhabCpuPercent received update 
+then
+logDebug("MONITORING","Monitoring logics START here...")
+// DIR USAGE
+if(DirUsage_root.state as DecimalType>1500) {
+	if(DirUsage_root.state as DecimalType>1580) {
+			logInfo("MONITORING","ROOT FOLDER: 95% CRITICAL TRESHOLD triggered")
+				// put mailsend here....
+		} else {
+			logInfo("MONITORING","ROOT FOLDER: 85% WARNING TRESHOLD triggered")
+				// put mailsend here....
+	}
+}
+
+// MEMORY USAGE
+if(MemUsedPercent.state as DecimalType>80) {
+	if(MemUsedPercent.state as DecimalType>90) {
+		logDebug("MONITORING","MEMORY USAGE: 90% CRITICAL TRESHOLD triggered")
+//		sendMail("polyopenhab@gmail.com","OPENHAB:Memory usage 90%","")
+		// 	put mailsend here....
+	}
+	logDebug("MONITORING","MEMORY USAGE: 80% WARNING TRESHOLD triggered")
+//	sendMail("polyopenhab@gmail.com","OPENHAB:Memory usage 80%","")
+	// put mailsend here....
+}
+
+// CPU USAGE
+if(OpenhabCpuPercent.state as DecimalType>80) {
+	if(OpenhabCpuPercent.state as DecimalType>90) {
+		logDebug("MONITORING","CPU USAGE: 90% CRITICAL TRESHOLD triggered")
+		// 	put mailsend here....
+	}
+	logDebug("MONITORING","CPU USAGE: 80% WARNING TRESHOLD triggered")
+	// put mailsend here....
+}
+
+logDebug("MONITORING","Monitoring logics END here...")
+end
+
+///  ======= Some Administrative tasks on buttons
+
+rule "Clean up logs" when Item CleanUpLogs received command ON then
+	logDebug("EXEC","Cleaning up logs with command line")
+	executeCommandLine("/hab/openhab/scripts/clean_logs.sh")
+	postUpdate(CleanUpLogs,OFF)
+end
+/* 
+rule "Backup system" when Item BackupSystem received command ON then
+	logInfo("EXEC","Backup the system under /backup folder")
+	executeCommandLine("/root/backup.sh",60000)
+	postUpdate(BackupSystem,OFF)
+end
+
 /**/
+
+
+//PLAYGROUND
+
+rule "SendMail button"
+when Item SendMail received command
+then
+logInfo("SENDMAIL","SENDMAIL BUTTON PRESSED")
+sendMail("polyopenhab@gmail.com","OPENHAB:Memory usage 80%","OPENHAB:Memory usage 80%")
+end

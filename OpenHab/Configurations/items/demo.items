@@ -18,9 +18,9 @@ Number	ALL_Reinitialize	"Initialize system"	(All)
 //  Living room
 Switch	LR_Heater1	"Отопление - дневна"	<heater2>	(All,Heaters,LR)	
 Number	LR_Heater1_mode	"Режим"	<network>	(All,Modes,LR,Persisted_items)	
-Number	LR_Temp_sensor1	"Дневна стая [%.1f °C]"	<temperature>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Temp_Sensor1:state:default" } // onewire="28.FF5959201400#temperature"	 
-Number	LR_Temp_sensor2	"Т °C в дневна DHT11 [%.1f °C]"	<temperature>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Temp_Sensor2:state:default" } // onewire="28.FF5959201400#temperature"
-Number	LR_Humidity_sensor1	"Влажност в дневна [%.1f %%]"	<temperature>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Humidity_sensor1:state:default" } // onewire="28.FF5959201400#temperature"
+Number	LR_Temp_sensor1	"Дневна стая [%.1f °C]"	<temperature>	(All,Sensors,LR,Sensors) { mqtt="<[mqtt:LR_Temp_Sensor1:state:default" } // onewire="28.FF5959201400#temperature"	 
+Number	LR_Temp_sensor2	"Т °C в дневна DHT11 [%.1f °C]"	<temperature>	(All,Sensors,LR,Sensors) { mqtt="<[mqtt:LR_Temp_Sensor2:state:default" } // onewire="28.FF5959201400#temperature"
+Number	LR_Humidity_sensor1	"Влажност в дневна [%.1f %%]"	<temperature>	(All,Sensors,LR,Sensors) { mqtt="<[mqtt:LR_Humidity_sensor1:state:default" } // onewire="28.FF5959201400#temperature"
 Number	LR_Set_TemperatureON	"Manual [%.1f °C]"	<temperature>	(All,LR,Persisted_items)	
 Number	LR_Set_Temperature1	"Work [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
 Number	LR_Set_Temperature2	"Home [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
@@ -38,7 +38,7 @@ DateTime	LR_Humidity_sensor1_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
 //  Aquarium
 Group	AQ_Temperature_Chart
 Number	AQ_Temperature_Chart_Period	(AQ_Temperature_Chart,Persisted_items)	
-Number	AQ_Temp_Sensor1	"Аквариум [%.2f °C]"	<temperature>	(All,Sensors,Aquarium,Persisted_items,AQ_Temperature_Chart)		{ mqtt="<[mqtt:AQ_Temp_Sensor1:state:default" } //onewire="28.5E74D2050000#temperature"
+Number	AQ_Temp_Sensor1	"Аквариум [%.2f °C]"	<temperature>	(All,Sensors,Aquarium,AQ_Temperature_Chart)		{ mqtt="<[mqtt:AQ_Temp_Sensor1:state:default" } //onewire="28.5E74D2050000#temperature"
 Number AQ_Logics_mode "Режим" <network> (All,Modes,AQ,Persisted_items)
 Switch	AQ_Heater1	"Нагревател"	<heater2>	(All,Heaters,Aquarium,Persisted_items)		{ mqtt=">[mqtt:AQ_Heater1:command:*:${command}]" } //gpio="pin:47 activelow:yes",  
 Switch	AQ_Cooler1	"Охладител"	<cooler2> (All,Coolers,Aquarium,Persisted_items) 	{ mqtt=">[mqtt:AQ_Cooler1:command:*:${command}]"}   // gpio="pin:45 activelow:yes",
@@ -54,8 +54,19 @@ Group	Weather_Chart	(Weather)
 Number	Weather_Temperature	"Outside Temperature [%.1f]"	<temperature>	(Weather_Chart)		{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_temperature.xsl)]" }
 Number	Weather_Temp_Max	"Todays Maximum [%.1f °C]"	<temperature>	(Weather_Chart)	
 Number	Weather_Temp_Min	"Todays Minimum [%.1f °C]"	<temperature>	(Weather_Chart)	
-DateTime	Weather_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
 DateTime	Date	"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ ntp="Europe/Berlin:de_DE" }
+//Number Weather_pressure_set "Altimeter setting [%d hPA]" <temperature> (All,Sensors) { mqtt=">[mqtt:Weather_pressure_set:command:*:default" }
+Number Weather_pressure "Pressure reported [%d hPA]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_pressure:state:default" }
+Number Weather_altitude "Altitude reported [%d m]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_altitude:state:default" }
+Number Weather_temperature1 "Temperature reported [%d °C]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_temperature:state:default" }
+Number	Weather_pressure_reported	"Pressure [%.1f hPA]"	<temperature> (All,Sensors)		{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_pressure.xsl)]", mqtt=">[mqtt:Weather_pressure_set:command:*:default" }
+Number	Weather_humidity "Humidity [%.1f %%]"	<temperature>	(All,Sensors)	{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_humidity.xsl)]" }
+
+DateTime	Weather_pressure_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
+DateTime	Weather_altitude_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
+DateTime	Weather_temperature1_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
+DateTime	Weather_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
+
 
 // IP Monitoring - network health binding
 Switch  IP_iPhone "iPhone" <network> (IP_Devices,Persisted_items) { nh="192.168.254.102" }
@@ -65,6 +76,7 @@ Switch  IP_PC "PC" <network> (IP_Devices,Persisted_items) { nh="192.168.254.100"
 Switch  IP_Beaglebone "BeagleBone" <network> (IP_Devices,Persisted_items) { nh="192.168.254.30" }
 Switch  IP_Router "TP-Link" <network> (IP_Devices,Persisted_items) { nh="192.168.254.1" }
 Switch  IP_AQ_Arduino "Arduino Aquarium" <network> (IP_Devices,Persisted_items) { nh="192.168.254.35" }
+Switch  IP_Weather_Station_Arduino "Arduino Weather" <network> (IP_Devices,Persisted_items) { nh="192.168.254.36" }
 
 Number	Chart_Period	"Chart Period"	//used to setup the periods of charts as temporary variable
 Number	Chart_Period1	"Chart Period1" //used to setup the periods of charts as temporary variable
@@ -90,6 +102,12 @@ Number OpenhabCpuTotal  "CPU total [%.1f]"  (System,Persisted_items) { systeminf
 Number OpenhabUptime    "Uptime [%d]"   (System,Persisted_items) { systeminfo="ProcessUptime:300000:$$" }
 String OpenhabUptimeFormatted   "Openhab Uptime form. [%s]" (System,Persisted_items) { systeminfo="ProcessUptimeFormatted:300000:$$" }
 Number DirUsage_root "Dir usage [%.1f]"  (System,Persisted_items) { systeminfo="DirUsage:300000:/" }
-/**/
+/* */
+
+// Some custom buttons for exec commands
+Switch CleanUpLogs "Clean up all logs" <settings> (System) // {exec="/hab/openhab/scripts/clean_logs.sh"} 
+Switch BackupSystem "Backup the configuration" <settings> (System) // {exec="/root/backup.sh"}
+
 
 // PLAYGROUND
+Number SendMail <network> 
