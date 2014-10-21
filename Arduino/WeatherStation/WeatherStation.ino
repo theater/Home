@@ -7,7 +7,11 @@
 #include <Adafruit_BMP085.h>
 
 #define PUBLISH_INTERVAL 60000  // Publish data each minute to MQTT broker
-#define MANUAL_INTERVAL 300000  // Manual function check interval will be on each 15 min
+#define RESET 3  // Reset button - pin 3 goes to GND
+//#define MANUAL_INTERVAL 300000  // Manual function check interval will be on each 5 min
+#define RESET_INTERVAL 300000  // Reset counter will be changed each 5 mins, 3 times if not connected by then - reset the duino
+int resetCounter=0;
+int resetCheck;
 float SEALEVEL_PRESSURE=101300;  // get this information from local weather stations eventually
 byte server[] = { 192,168,254,30 };
 unsigned long now;
@@ -22,7 +26,6 @@ PubSubClient MQTT_Client(server, 1883, callback, ethClient);
 
 
 int MQTT_Connect () {
-  if (!MQTT_Client.connected()) {
     MQTT_Client.disconnect();
     if (MQTT_Client.connect("ArduinoNANO-Weather")) {
       MQTT_Client.publish("Arduino","Arduino-Weather is UP");
@@ -33,7 +36,6 @@ int MQTT_Connect () {
        Serial.println("Error connecting to MQTT\n");
        return 0;
      }
-  } else return 1;
 }
 
 void Publish_Data () {
@@ -90,6 +92,7 @@ int freeRam () {
 
 void setup()
 {
+  digitalWrite(RESET, HIGH);
   Serial.begin(115200);
   if (!bmp.begin()) {
 	Serial.println("Could not find a valid BMP085 sensor, check wiring!");
@@ -113,7 +116,19 @@ void loop()
     Publish_Data();
     MQTT_Client.loop();
   }/**/
+  if(!MQTT_Client.connected()) {
+    now=millis();
+    if ((now - resetCheck>=RESET_INTERVAL) {  
+      resetCheck=now;
+      ++resetCounter;
+      Serial.print("ResetCounter:");Serial.println(resetCounter);
+      if(resetCounter>3) { digitalWrite(RESET, LOW); }
+      MQTT_Connect();
+    }
+  } else {
+  resetCounter=0;
   Publish_Data();
   MQTT_Client.loop();
-  Ethernet.maintain();/**/
+  }
+  Ethernet.maintain();
 } 
