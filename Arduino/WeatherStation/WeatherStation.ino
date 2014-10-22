@@ -28,7 +28,7 @@ PubSubClient MQTT_Client(server, 1883, callback, ethClient);
 int MQTT_Connect () {
     MQTT_Client.disconnect();
     if (MQTT_Client.connect("ArduinoNANO-Weather")) {
-      MQTT_Client.publish("Arduino","Arduino-Weather is UP");
+
       MQTT_Client.subscribe("Weather_pressure_set");
       Serial.println("Connected to MQTT\n");
       return 1;
@@ -103,6 +103,7 @@ void setup()
   delay(500);
 //  MQTT_Connect();
 MQTT_Client.connect("ArduinoNANO-Weather");
+MQTT_Client.publish("Weather_Station_count","ON");
 MQTT_Client.subscribe("Weather_pressure_set");
 }
 
@@ -118,7 +119,7 @@ void loop()
   }/**/
   if(!MQTT_Client.connected()) {
     now=millis();
-    if ((now - resetCheck>=RESET_INTERVAL) {  
+    if (now - resetCheck>=RESET_INTERVAL) {  
       resetCheck=now;
       ++resetCounter;
       Serial.print("ResetCounter:");Serial.println(resetCounter);
