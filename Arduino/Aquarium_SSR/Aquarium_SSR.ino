@@ -11,7 +11,7 @@
 #define AQ_HEATER1_PIN 6 //AQ_Heater1
 #define AQ_COOLER1_PIN 5  //AQ_Cooler1
 #define OW_REPORTING_INTERVAL 60000  // report 1-wire sensors data each minute to MQTT broker
-#define AQ_MANUAL_INTERVAL 900000  // Aquarium manual function check interval will be on each 15 min
+#define AQ_MANUAL_INTERVAL 180000  // Aquarium manual function check interval will be on each 3 min
 #define AQ_Set_Temperature_manual 25 // Set temperature in manual mode (if no MQTT connection available)
 
 byte server[] = { 192,168,254,30 };
@@ -111,7 +111,6 @@ void ManualAQLogics()  {
     if (AQ_Temperature>AQ_Set_Temperature_manual) {
 //        Serial.println("Starting AQ Cooler");
         gpio(AQ_COOLER1_PIN,1);
-        Ethernet.begin(mac,myIP);
     }  
     if (AQ_Temperature<AQ_Set_Temperature_manual-1) { 
 //        Serial.println("Starting AQ Heater");
@@ -174,9 +173,8 @@ void loop()
 {
  if (!MQTT_Connect()){
     ManualAQLogics();  
-    delay(AQ_MANUAL_INTERVAL); // if not connected wait 30sec before next attempt
-    ethClient.stop();
-    Ethernet.begin(mac,myIP);
+    delay(30000); // if not connected wait 30sec before next attempt
+    Enc28J60.init(mac);
   } else {
     OneWireGetAndReport();  
     MQTT_Client.loop();

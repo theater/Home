@@ -9,7 +9,7 @@
 #define PUBLISH_INTERVAL 60000  // Publish data each minute to MQTT broker
 #define RESET 3  // Reset button - pin 3 goes to GND
 //#define MANUAL_INTERVAL 300000  // Manual function check interval will be on each 5 min
-#define RESET_INTERVAL 300000  // Reset counter will be changed each 5 mins, 3 times if not connected by then - reset the duino
+#define RESET_INTERVAL 60000  // Reset counter will be changed each 1 mins, 3 times if not connected by then - reset the duino
 int resetCounter=0;
 int resetCheck;
 float SEALEVEL_PRESSURE=101300;  // get this information from local weather stations eventually
@@ -28,7 +28,6 @@ PubSubClient MQTT_Client(server, 1883, callback, ethClient);
 int MQTT_Connect () {
     MQTT_Client.disconnect();
     if (MQTT_Client.connect("ArduinoNANO-Weather")) {
-
       MQTT_Client.subscribe("Weather_pressure_set");
       Serial.println("Connected to MQTT\n");
       return 1;
@@ -122,14 +121,16 @@ void loop()
     if (now - resetCheck>=RESET_INTERVAL) {  
       resetCheck=now;
       ++resetCounter;
+      Enc28J60.init(mac);
       Serial.print("ResetCounter:");Serial.println(resetCounter);
-      if(resetCounter>3) { digitalWrite(RESET, LOW); }
+      if(resetCounter>=3) { Serial.println("Reseting arduino"); digitalWrite(RESET, LOW); }
       MQTT_Connect();
     }
   } else {
   resetCounter=0;
   Publish_Data();
   MQTT_Client.loop();
+//  Serial.println("MQTT loop ends here...");
   }
-  Ethernet.maintain();
+//  Ethernet.maintain();
 } 

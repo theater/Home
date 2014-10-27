@@ -27,7 +27,7 @@ void setup()
   Serial.begin(9600);
 
   uint8_t mac[6] = {0x00,0x01,0x02,0x03,0x04,0x05};
-  IPAddress myIP(192,168,254,35);
+  IPAddress myIP(192,168,0,6);
 
   Ethernet.begin(mac,myIP);
 
