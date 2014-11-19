@@ -6,6 +6,7 @@ Aquarium_MQTT_PIR - test sketch with all aquarium functionality plus some logics
 Aqiarium_MQTT_orig - the first version of the sketch - saved for looking back if needed
 Aquarium_RELAYS - version with inverse logic (0 or low level activates the relays of chinese relay boards)
 Aquarium_SSR - version with normal logic (1 or high level activates the SSRs of my board)
+WeatherStation - sketch for the small weather station on my terrace (sensors - DS18B20, DHT22, BMP085)
 
 Special thanks to Dimitar Valchev for making most of the soldering and giving me best advices for electrical part of the final product. :)
 his Github place: https://github.com/div-co :)
