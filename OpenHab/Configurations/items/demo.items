@@ -50,22 +50,27 @@ Number	AQ_Temp_MIN	"Минимална температура - аквариум
 DateTime AQ_Temp_Sensor1_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>	
 
 //Weather
-Group	Weather_Chart	(Weather)	
-Number	Weather_Temperature	"Outside Temperature [%.1f]"	<temperature>	(Weather_Chart)		{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_temperature.xsl)]" }
+Group	Weather_Chart	(Weather)
+//My Station:
 Number	Weather_Temp_Max	"Todays Maximum [%.1f °C]"	<temperature>	(Weather_Chart)	
 Number	Weather_Temp_Min	"Todays Minimum [%.1f °C]"	<temperature>	(Weather_Chart)	
-DateTime	Date	"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ ntp="Europe/Berlin:de_DE" }
-//Number Weather_pressure_set "Altimeter setting [%d hPA]" <temperature> (All,Sensors) { mqtt=">[mqtt:Weather_pressure_set:command:*:default" }
+Number Weather_pressure_set "Altimeter setting [%d hPA]" <temperature> (All,Sensors) { mqtt=">[mqtt:Weather_pressure_set:command:*:default" }
 Number Weather_pressure "Pressure reported [%d hPA]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_pressure:state:default" }
-Number Weather_altitude "Altitude reported [%d m]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_altitude:state:default" }
-Number Weather_temperature1 "Temperature reported [%d °C]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_temperature:state:default" }
-Number	Weather_pressure_reported	"Pressure [%.1f hPA]"	<temperature> (All,Sensors)		{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_pressure.xsl)]", mqtt=">[mqtt:Weather_pressure_set:command:*:default" }
-Number	Weather_humidity "Humidity [%.1f %%]"	<temperature>	(All,Sensors)	{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_humidity.xsl)]" }
+Number Weather_humidity "Weather humidity [%d %%]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_humidity:state:default" }
+Number Weather_temperature1 "Temperature reported [%.2f °C]" <temperature> (All,Sensors)
+Number Weather_temperature2 "DS18B20 [%.2f °C]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_temperature1:state:default" }
+// Internet weather:
+Number	Weather_pressure_wunderground	"W-Underground Pressure [%.1f hPA]"	<temperature> (All,Sensors)		{ http="<[http://api.wunderground.com/api/<PUTYOURKEYHERE>/conditions/q/pws:ISOFIASO7.xml:1200000:XSLT(wunderground_pressure.xsl)]" }
+Number	Weather_Temperature_yahoo	"Yahoo temperature [%.1f]"	<temperature>	(Weather_Chart)		{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_temperature.xsl)]" }
+Number	Weather_humidity_yahoo "Yahoo Humidity [%.1f %%]"	<temperature>	(All,Sensors)	{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_humidity.xsl)]" }
+Number Weather_Station_count "Resets count [%d]"<network> (All)  { mqtt="<[mqtt:Weather_Station_count:state:default" }
 
+DateTime	Date	"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ ntp="Europe/Berlin:de_DE" }
 DateTime	Weather_pressure_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
 DateTime	Weather_altitude_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
 DateTime	Weather_temperature1_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
 DateTime	Weather_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
+DateTime	Weather_humidity_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
 
 
 // IP Monitoring - network health binding
@@ -77,6 +82,7 @@ Switch  IP_Beaglebone "BeagleBone" <network> (IP_Devices,Persisted_items) { nh="
 Switch  IP_Router "TP-Link" <network> (IP_Devices,Persisted_items) { nh="192.168.254.1" }
 Switch  IP_AQ_Arduino "Arduino Aquarium" <network> (IP_Devices,Persisted_items) { nh="192.168.254.35" }
 Switch  IP_Weather_Station_Arduino "Arduino Weather" <network> (IP_Devices,Persisted_items) { nh="192.168.254.36" }
+
 
 Number	Chart_Period	"Chart Period"	//used to setup the periods of charts as temporary variable
 Number	Chart_Period1	"Chart Period1" //used to setup the periods of charts as temporary variable
@@ -105,9 +111,9 @@ Number DirUsage_root "Dir usage [%.1f]"  (System,Persisted_items) { systeminfo="
 /* */
 
 // Some custom buttons for exec commands
-Switch CleanUpLogs "Clean up all logs" <settings> (System) // {exec="/hab/openhab/scripts/clean_logs.sh"} 
+Number OpenHAB "OpenHAB commands" <settings> (System) // {exec="/hab/openhab/scripts/clean_logs.sh"} 
 Switch BackupSystem "Backup the configuration" <settings> (System) // {exec="/root/backup.sh"}
 
 
 // PLAYGROUND
-Number SendMail <network> 
+//Number SendMail <network> 
