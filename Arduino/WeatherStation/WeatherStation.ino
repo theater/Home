@@ -48,9 +48,9 @@ void Publish_Data () {
     Serial.println("Entered publishing...");
     sentTime=now;
     bmp.begin();
+    float Temperature=sensors.getTempCByIndex(0);
 //    int Altitude=int(bmp.readAltitude(SEALEVEL_PRESSURE));
     int Pressure=bmp.readPressure()/100;
-    int Temperature=bmp.readTemperature();
     char strConvert[10];
     sensors.requestTemperatures(); // Send the command to get temperatures from 1-wire
     DHT.read22(DHT_PIN);  //read info from DHT/    
@@ -72,11 +72,14 @@ void Publish_Data () {
 //      MQTT_Client.publish("Weather_temperature",strConvert); // send to MQTT
 //   }  
     //OneWire DS18B20
-    if(sensors.getTempCByIndex(0)>-25&&sensors.getTempCByIndex(0)<50) { 
-        dtostrf(sensors.getTempCByIndex(0),6,3,strConvert);
-//        Serial.println("Temperature for AQ temp Sensor is: ");   // print AQ temperature
-//       Serial.println(sensors.getTempCByIndex(0));    // to serial
-        MQTT_Client.publish("Weather_temperature1",strConvert);  // send it to MQTT broker
+    if(Temperature>-25&&Temperature<50) { 
+      int integerPart=(int)Temperature;
+      if(integerPart>9){
+       dtostrf(Temperature,6,3,strConvert);
+      } else { dtostrf(Temperature,5,3,strConvert); }
+//       Serial.print("Temp: ");   // print AQ temperature
+//       Serial.println(strConvert);    // to serial
+       MQTT_Client.publish("Weather_temperature1",strConvert);  // send it to MQTT broker
     }
     // DHT22
     if(DHT.humidity>0) {

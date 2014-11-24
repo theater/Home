@@ -65,7 +65,7 @@ void OneWireGetAndReport() {
     sentTime = now;
     //  Start reading sensors...
     sensors.requestTemperatures(); // Send the command to get temperatures from 1-wire
-    DHT.read11(DHT11_PIN);  //read info from DHT11
+//    DHT.read11(DHT11_PIN);  //read info from DHT11
     //do transformations and post to MQTT
     char strConvert[10];
     // 1-wire HERE
