@@ -4,7 +4,7 @@
 <xsl:output indent="yes" method="xml" encoding="UTF-8" omit-xml-declaration="yes" />
 
 <xsl:template match="/">
-<xsl:value-of select="//current_observation/temp_c"/>
+<xsl:value-of select="//current_observation/relative_humidity"/>
 </xsl:template>
  
 </xsl:stylesheet>

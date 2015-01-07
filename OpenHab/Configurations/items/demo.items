@@ -38,15 +38,15 @@ DateTime	LR_Humidity_sensor1_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
 //  Aquarium
 Group	AQ_Temperature_Chart
 Number	AQ_Temperature_Chart_Period	(AQ_Temperature_Chart,Persisted_items)	
-Number	AQ_Temp_Sensor1	"Аквариум [%.2f °C]"	<temperature>	(All,Sensors,Aquarium,AQ_Temperature_Chart)		{ mqtt="<[mqtt:AQ_Temp_Sensor1:state:default" } //onewire="28.5E74D2050000#temperature"
+Number	AQ_Temp_Sensor1	"Аквариум [%.1f °C]"	<temperature>	(All,Sensors,Aquarium,AQ_Temperature_Chart)		{ mqtt="<[mqtt:AQ_Temp_Sensor1:state:default" } //onewire="28.5E74D2050000#temperature"
 Number AQ_Logics_mode "Режим" <network> (All,Modes,AQ,Persisted_items)
 Switch	AQ_Heater1	"Нагревател"	<heater2>	(All,Heaters,Aquarium,Persisted_items)		{ mqtt=">[mqtt:AQ_Heater1:command:*:${command}]" } //gpio="pin:47 activelow:yes",  
 Switch	AQ_Cooler1	"Охладител"	<cooler2> (All,Coolers,Aquarium,Persisted_items) 	{ mqtt=">[mqtt:AQ_Cooler1:command:*:${command}]"}   // gpio="pin:45 activelow:yes",
 Switch	AQ_Light1	"Осветление"	<light>	(All,Aquarium,Lights,Persisted_items)		{ mqtt=">[mqtt:AQ_Light1:command:*:${command}]"}  //gpio="pin:60 activelow:yes", 
 Number	AQ_Set_Temperature	"Зададена температура[%.1f °C]"	<temperature>	(AQ,Persisted_items)	
-Number	AQ_TempDelta1	"Температурна разлика за последния час [%.4f °C]"	<temperature>	(All,Aquarium,Persisted_items)	
-Number	AQ_Temp_MAX	"Максимална температура - аквариум [%.2f °C]"	<temperature>	(AQ,Persisted_items)	
-Number	AQ_Temp_MIN	"Минимална температура - аквариум [%.2f °C]"	<temperature>	(AQ,Persisted_items)
+Number	AQ_TempDelta1	"Температурна разлика за последния час [%.3f °C]"	<temperature>	(All,Aquarium,Persisted_items)	
+Number	AQ_Temp_MAX	"Аквариум-максимум (24h) [%.1f°C]"	<temperature>	(AQ,Persisted_items)	
+Number	AQ_Temp_MIN	"Аквариум-минимум (24h) [%.1f°C]"	<temperature>	(AQ,Persisted_items)
 DateTime AQ_Temp_Sensor1_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>	
 
 //Weather
@@ -55,12 +55,16 @@ Group	Weather_Chart	(Weather)
 Number	Weather_Temp_Max	"Todays Maximum [%.1f °C]"	<temperature>	(Weather_Chart)	
 Number	Weather_Temp_Min	"Todays Minimum [%.1f °C]"	<temperature>	(Weather_Chart)	
 Number Weather_pressure_set "Altimeter setting [%d hPA]" <temperature> (All,Sensors) { mqtt=">[mqtt:Weather_pressure_set:command:*:default" }
-Number Weather_pressure "Pressure reported [%d hPA]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_pressure:state:default" }
-Number Weather_humidity "Weather humidity [%d %%]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_humidity:state:default" }
-Number Weather_temperature1 "Temperature reported [%.2f °C]" <temperature> (All,Sensors)
-Number Weather_temperature2 "DS18B20 [%.2f °C]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_temperature1:state:default" }
+Number Weather_pressure "Outside Pressure [%d hPA]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_pressure:state:default" }
+Number Weather_humidity "Outside Humidity [%d %%]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_humidity:state:default" }
+Number Weather_temperature1 "Outside Temperature [%.1f °C]" <temperature> (All,Sensors)
+Number Weather_temperature2 "DS18B20 [%.1f °C]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_temperature1:state:default" }
 // Internet weather:
-Number	Weather_pressure_wunderground	"W-Underground Pressure [%.1f hPA]"	<temperature> (All,Sensors)		{ http="<[http://api.wunderground.com/api/<PUTYOURKEYHERE>/conditions/q/pws:ISOFIASO7.xml:1200000:XSLT(wunderground_pressure.xsl)]" }
+// UNDERGROUND WEATHER
+Number	Weather_pressure_wunderground	"Underground Pressure [%.1f hPA]"	<temperature> (All,Sensors)		{ http="<[http://api.wunderground.com/api/77b63e591e5c67e9/conditions/q/pws:ISOFIASO7.xml:1200000:XSLT(wunderground_pressure.xsl)]" }
+Number	Weather_temperature_wunderground	"Underground Temperature [%.1f °C]"	<temperature> (All,Sensors)		{ http="<[http://api.wunderground.com/api/77b63e591e5c67e9/conditions/q/pws:ISOFIASO7.xml:1200000:XSLT(wunderground_temperature.xsl)]" }
+Number	Weather_humidity_wunderground	"Underground Humidity [%d %%]"	<temperature> (All,Sensors)		{ http="<[http://api.wunderground.com/api/77b63e591e5c67e9/conditions/q/pws:ISOFIASO7.xml:1200000:XSLT(wunderground_humidity.xsl)]" }
+// YAHOO WEATHER
 Number	Weather_Temperature_yahoo	"Yahoo temperature [%.1f]"	<temperature>	(Weather_Chart)		{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_temperature.xsl)]" }
 Number	Weather_humidity_yahoo "Yahoo Humidity [%.1f %%]"	<temperature>	(All,Sensors)	{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_humidity.xsl)]" }
 Number Weather_Station_count "Resets count [%d]"<network> (All)  { mqtt="<[mqtt:Weather_Station_count:state:default" }

@@ -2,9 +2,17 @@ import org.openhab.core.library.types.*
 import org.openhab.core.persistence.*
 import org.openhab.model.script.actions.*
 import org.openhab.action.*
+import java.lang.Math
 
 var Number counter = 1
-var Timer timer = null
+//var Timer timer = null
+var Timer MailMemoryCrit_timer = null
+var Timer MailMemoryWarn_timer = null
+var Timer MailCPUCrit_timer = null
+var Timer MailCPUWarn_timer = null
+var Timer MailHDDCrit_timer = null
+var Timer MailHDDWarn_timer = null
+
 /*
 rule Startup
 when 
@@ -78,6 +86,7 @@ rule "Initialize states of variables"
 	postUpdate(Weather_Station_count,0); //clear reboot counter on reset
 //	postUpdate(AQ_Set_Temperature,25) // 25C initial aquarium temp value
 //	postUpdate(AQ_TempDelta,2) 
+    executeCommandLine("touch /hab/openhab/configurations/persistence/mysql.persist")
 	logDebug("RULES","System Initialization ENDS HERE")
 end
 
@@ -89,14 +98,14 @@ end
  /* */ 
 rule "Update max and min temperatures"
 when
-	Item Weather_Temperature changed or
-	Time cron "0 0 0 * * ?" or
+	Item Weather_temperature1 changed or
+	Time cron "0 0/5 * * * ?" or
 	System started
 then	
 	postUpdate(Weather_Temp_Max, Weather_temperature1.maximumSince(now.toDateMidnight).state)
 	postUpdate(Weather_Temp_Min, Weather_temperature1.minimumSince(now.toDateMidnight).state)
-	postUpdate(AQ_Temp_MAX, AQ_Temp_Sensor1.maximumSince(now.toDateMidnight).state)
-	postUpdate(AQ_Temp_MIN, AQ_Temp_Sensor1.minimumSince(now.toDateMidnight).state)
+	postUpdate(AQ_Temp_MAX, AQ_Temp_Sensor1.maximumSince(now.minusDays(1)).state)
+	postUpdate(AQ_Temp_MIN, AQ_Temp_Sensor1.minimumSince(now.minusDays(1)).state)
 	logDebug("RULES","MIN/MAX ENDS HERE")
 end
 
@@ -105,12 +114,13 @@ rule "Persistence Demo"
 when
 	Time cron "0 * * * * ?"
 then	
-	if(Weather_Temperature_yahoo.changedSince(now.minusMinutes(1))) {
-		println("2 minutes ago, the temperature was " + Weather_Temperature_yahoo.historicState(now.minusMinutes(2)) + " degrees.")	
+	if(Weather_temperature1.changedSince(now.minusMinutes(1))) {
+		println("2 minutes ago, the temperature was " + Weather_temperature1.historicState(now.minusMinutes(2)) + " degrees.")	
 	}
-	postUpdate(Weather_temperature1,Weather_Temperature_yahoo.state)
+	postUpdate(Weather_temperature1,Weather_temperature2.state)
 	logDebug("RULES","Persistence demo ends HERE")
 end /* */
+
 
 /////////////////////////////////////////////////////////////////////////////////////////// 
 // Creates an item that stores the last update time of this item
@@ -320,7 +330,8 @@ switch (AQ_Logics_mode.state) {
 	case 1: logDebug("RULES","AQUARIUM: Mode set to manual")
 	default: {
 	logDebug("RULES","AQUARIUM: Mode set to AUTO")
-	if ((aq_temp_sensor!="UNDEFINED"||aq_temp_sensor!="NULL")&&(AQ_TempDelta1!="UNDEFINED"||AQ_TempDelta1!="NULL")) { 
+	if(AQ_Set_Temperature.state=="UNDEFINED"||AQ_Set_Temperature.state=="NULL"||AQ_Set_Temperature.state=="Uninitialized"){postUpdate(AQ_Set_Temperature,25)}
+	if ((aq_temp_sensor!="UNDEFINED"||aq_temp_sensor!="NULL")) { //&&(AQ_TempDelta1!="UNDEFINED"||AQ_TempDelta1!="NULL") 
 		if (((aq_temp_sensor<aq_temp_set_temp)&&(lr_temp_sensor1<aq_temp_set_temp)||(aq_temp_sensor<aq_temp_set_temp-1))&&((delta1>-1.5)&&(delta1<1.5))) {  
 			sendCommand(AQ_Heater1,ON)
 		} else {
@@ -336,7 +347,7 @@ switch (AQ_Logics_mode.state) {
 		} else{
 			sendCommand(AQ_Cooler1,OFF)
 		}
-	}
+	} //else { postUpdate(AQ_Set_Temperature,25) }
 	logDebug("RULES","Aquarium logics end HERE")
 	}
 	}
@@ -391,13 +402,27 @@ then
 logDebug("MONITORING","Monitoring logics START here...")
 	if(DirUsage_root.state as DecimalType>1500) {
 		if(DirUsage_root.state as DecimalType>1600) {
+			if(MailHDDCrit_timer==null) {
 				logDebug("MONITORING","ROOT FOLDER: 98% CRITICAL TRESHOLD triggered")
 				sendMail("polychronov@gmail.com","OPENHAB:DIR usage 98%","")
-			} else {
+				MailHDDCrit_timer=createTimer(now.plusHours(1))[|]
+			} else { 
+				MailHDDCrit_timer.reschedule(now.plusHours(1))
+			}
+		} else {
+			if(MailHDDWarn_timer==null) {
 				logDebug("MONITORING","ROOT FOLDER: 95% WARNING TRESHOLD triggered")
 				sendMail("polychronov@gmail.com","OPENHAB:DIR usage 95%","")
-				// put mailsend here....
+				MailHDDWarn_timer=createTimer(now.plusHours(1))[|]
+			} else {
+				MailHDDWarn_timer.reschedule(now.plusHours(1))
 			}
+		}
+	} else {
+		MailHDDWarn_timer.cancel
+		MailHDDCrit_timer.cancel
+		MailHDDWarn_timer=null
+		MailHDDCrit_timer=null		
 	}
 end
 
@@ -406,6 +431,7 @@ when Item MemUsedPercent changed
 then
 if(MemUsedPercent.state as DecimalType>80) {
 	if(MemUsedPercent.state as DecimalType>90) {
+		
 		logDebug("MONITORING","MEMORY USAGE: 90% CRITICAL TRESHOLD triggered")
 		sendMail("polychronov@gmail.com","OPENHAB:Memory usage 90%","")
 

@@ -1,0 +1,43 @@
+Group	All
+Group	Heaters	"All Heaters"	<heater2>	(All)	
+Group	Coolers	"All Coolers"	<cooler>	(All)	
+Group	Sensors	(All)	
+Group	Roller_Shutters	(All)	
+Group	Aquarium	(All)	
+Group	Persisted_items	(All)	
+Group	Lights	"All Lights"	<light>	(All)	
+Group:Switch:AND()	Indicators	"All Indicators [(%d)]"	<light>	(All)	
+Group:Number:AND()	Modes	"All indicator modes [%d]"	(All)	
+Group	LR	"Дневна стая"	<living>
+Group	LR_Programs	(LR)	
+Number	ALL_Reinitialize	"Initialize system"	(All)	
+Switch	LR_Heater1	"Отопление - дневна"	<heater2>	(All,Heaters,LR)	
+Number	LR_Heater1_mode	"Режим"	<network>	(All,Modes,LR)	
+Number	LR_Temp_sensor1	"Текуща Т °C в дневна [%.1f °C]"	<temperature>	(All,Sensors,LR,Persisted_items)	
+Number	LR_Set_TemperatureON	"Т °C в дневна ръчен режим [%.1f °C]"	<temperature>	(All,LR,Persisted_items)	
+Number	LR_Set_Temperature1	"Т °C в дневна през работно време [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
+Number	LR_Set_Temperature2	"Т °C в дневна когато сме вкъщи [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
+Number	LR_Set_Temperature3	"Т °C в дневна през нощта [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
+Rollershutter	LR_East_Shutter01	"Щора,изток - прозорец-кухня"	(All,LR,Roller_Shutters)	
+Rollershutter	LR_East_Shutter02	"Щора,изток - врата-кухня"	(All,LR,Roller_Shutters)	
+Rollershutter	LR_East_Shutter03	"Щора,изток - прозорец-хол"	(All,LR,Roller_Shutters)	
+Rollershutter	LR_East_Shutter04	"Щора,изток - врата-хол"	(All,LR,Roller_Shutters)	
+Rollershutter	LR_South_Shutter01	"Щора,южна - прозорец"	(All,LR,Roller_Shutters)	
+Group	AQ_Temperature_Chart
+Number	AQ_Temperature_Chart_Period	(AQ_Temperature_Chart,Persisted_items)	
+Number	AQ_Temp_Sensor1	"Температура [%.1f °C]"	<temperature>	(All,Sensors,Aquarium,Persisted_items,AQ_Temperature_Chart)		{ onewire="28.5E74D2050000#temperature" }
+Switch	AQ_Heater1	"Нагревател"	<heater2>	(All,Heaters,Aquarium)		{ gpio="pin:20 activelow:yes" }
+Switch	AQ_Cooler1	"Охладител"	(All,Coolers,Aquarium)	
+Switch	AQ_Light1	"Осветление"	<light>	(All,Aquarium,Persisted_items,Lights)		{ gpio="pin:60 activelow:yes" }
+Number	AQ_Set_Temperature	"Задаване температура на аквариум [%.1f °C]"	<temperature>	(AQ,Persisted_items)	
+Number	AQ_TempDelta	"Температурна разлика за последните 30 мин [%.4f °C]"	<temperature>	(All,Aquarium)	
+Number	AQ_Temp_MAX	"Максимална температура - аквариум [%.2f °C]"	<temperature>	(AQ,Persisted_items)	
+Number	AQ_Temp_MIN	"Минимална температура - аквариум [%.2f °C]"	<temperature>	(AQ,Persisted_items)	
+Group	Weather_Chart	(Weather)	
+Number	Weather_Temperature	"Outside Temperature [%.1f]"	<temperature>	(Weather_Chart)		{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_temperature.xsl)]" }
+Number	Weather_Temp_Max	"Todays Maximum [%.1f °C]"	<temperature>	(Weather_Chart)	
+Number	Weather_Temp_Min	"Todays Minimum [%.1f °C]"	<temperature>	(Weather_Chart)	
+Number	Weather_Chart_Period	"Chart Period"
+DateTime	Weather_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
+DateTime	Date	"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ ntp="Europe/Berlin:de_DE" }
+Switch	gpio60	"GPIO60"	<light>

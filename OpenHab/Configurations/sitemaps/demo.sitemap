@@ -123,12 +123,20 @@ sitemap demo label="Main Menu"
 				}
 			}			
 			Frame label="Sites reports" {				
-				Text item=Weather_Temperature_yahoo valuecolor=[Weather_temperature1_LastUpdate>120="lightgray",>30="red", >25="orange", >10="green", <=10="blue",<=3="navy"] {
-					Chart item=Weather_Temperature_yahoo period=W refresh=3600
-				} 
+// UNDERGROUND WEATHER
+				Text item=Weather_temperature_wunderground valuecolor=[>30="red", >25="orange", >10="green", <=10="blue",<=3="navy"] {
+					Chart item=Weather_temperature_wunderground period=W refresh=3600
+				}
 				Text item=Weather_pressure_wunderground valuecolor=[Weather_LastUpdate>120="lightgray", >=1020="orange", <1020="green", <1000="blue"] {
 					Chart item=Weather_pressure_wunderground period=W refresh=3600
 				}
+				Text item=Weather_humidity_wunderground valuecolor=[<50="orange", <80="green", >80="blue"] {
+					Chart item=Weather_humidity_wunderground period=W refresh=3600
+				}
+//	YAHOO WEATHER			
+				Text item=Weather_Temperature_yahoo valuecolor=[Weather_temperature1_LastUpdate>120="lightgray",>30="red", >25="orange", >10="green", <=10="blue",<=3="navy"] {
+					Chart item=Weather_Temperature_yahoo period=W refresh=3600
+				} 
 				Text item=Weather_humidity_yahoo valuecolor=[Weather_LastUpdate>120="lightgray", <50="orange", <80="green", >80="blue"] {
 					Chart item=Weather_humidity_yahoo period=W refresh=3600
 				} 
@@ -137,10 +145,10 @@ sitemap demo label="Main Menu"
 			
  		Frame  {
 				Switch item=Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week", 3="Month"] 				
-				Chart item=Weather_Temperature_yahoo period=h refresh=600 visibility=[Chart_Period==0] 				
-				Chart item=Weather_Temperature_yahoo period=D refresh=3600 visibility=[Chart_Period==1] 				
-				Chart item=Weather_Temperature_yahoo period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
-				Chart item=Weather_Temperature_yahoo period=M refresh=3600 visibility=[Chart_Period==3] 				 				
+				Chart item=Weather_temperature1 period=h refresh=600 visibility=[Chart_Period==0] 				
+				Chart item=Weather_temperature1 period=D refresh=3600 visibility=[Chart_Period==1] 				
+				Chart item=Weather_temperature1 period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+				Chart item=Weather_temperature1 period=M refresh=3600 visibility=[Chart_Period==3] 				 				
 			}/**/			
 		}		
 	}	
@@ -149,6 +157,18 @@ sitemap demo label="Main Menu"
 			Frame label="Multi admin tasks" {
 			Text label="Charts" icon="chart"{
 				Switch item=Chart_Period1 label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"] 	
+				
+				Chart item=Weather_temperature1 period=h refresh=600 visibility=[Chart_Period==0] 				
+				Chart item=Weather_temperature1 period=D refresh=3600 visibility=[Chart_Period==1] 				
+				Chart item=Weather_temperature1 period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+				Chart item=Weather_temperature1 period=M refresh=3600 visibility=[Chart_Period==3]
+				Chart item=Weather_temperature1 period=Y refresh=3600 visibility=[Chart_Period==4]
+				
+				Chart item=Weather_Temperature_yahoo period=h refresh=600 visibility=[Chart_Period==0] 				
+				Chart item=Weather_Temperature_yahoo period=D refresh=3600 visibility=[Chart_Period==1] 				
+				Chart item=Weather_Temperature_yahoo period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+				Chart item=Weather_Temperature_yahoo period=M refresh=3600 visibility=[Chart_Period==3]
+				Chart item=Weather_Temperature_yahoo period=Y refresh=3600 visibility=[Chart_Period==3] 			 			
 				
 				Chart item=LR_Temp_sensor1 period=h refresh=600 visibility=[Chart_Period==0] 					
 				Chart item=LR_Temp_sensor1 period=D refresh=3600 visibility=[Chart_Period==1] 					
@@ -161,12 +181,7 @@ sitemap demo label="Main Menu"
 				Chart item=AQ_Temp_Sensor1 period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
 				Chart item=AQ_Temp_Sensor1 period=M refresh=3600 visibility=[Chart_Period==3]					
 				Chart item=AQ_Temp_Sensor1 period=Y refresh=3600 visibility=[Chart_Period==4]
-				
-				Chart item=Weather_Temperature period=h refresh=600 visibility=[Chart_Period==0] 				
-				Chart item=Weather_Temperature period=D refresh=3600 visibility=[Chart_Period==1] 				
-				Chart item=Weather_Temperature period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
-				Chart item=Weather_Temperature period=M refresh=3600 visibility=[Chart_Period==3]
-				Chart item=Weather_Temperature period=M refresh=3600 visibility=[Chart_Period==4]					 			
+									 			
 			}	
 			Text label="Mass-control" icon="settings"  {
 				Switch item=Heaters icon="heater2" mappings=[OFF="All heaters Off"] 			

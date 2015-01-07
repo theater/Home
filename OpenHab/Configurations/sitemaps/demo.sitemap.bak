@@ -1,0 +1,108 @@
+sitemap demo label="Main Menu"
+{
+	Frame label="Стаи"  {
+		Text label="Дневна стая" icon="living"  {
+			Text item=LR_Heater1 icon="heater2" 			
+			Switch item=LR_Heater1_mode mappings=[0="off", 1="manual", 2="auto"] 			
+			Setpoint item=LR_Set_TemperatureON minValue=5 maxValue=25 step=1 			
+			Text item=LR_Temp_sensor1 valuecolor=[>25="orange", >17="green", <=17="blue"]  {
+				Frame  {
+					Switch item=Weather_Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week"] 					
+					Chart item=LR_Temp_sensor1 period=hrefresh=600 visibility=[Weather_Chart_Period==0] 					
+					Chart item=LR_Temp_sensor1 period=Drefresh=3600 visibility=[Weather_Chart_Period==1] 					
+					Chart item=LR_Temp_sensor1 period=Wrefresh=3600 visibility=[Weather_Chart_Period==2, Weather_Chart_Period==Uninitialized] 					
+				}				
+			}			
+			Text label="Температури на различните програми" icon="clock"  {
+				Frame  {
+					Setpoint item=LR_Set_Temperature1 minValue=5 maxValue=25 step=1 					
+					Setpoint item=LR_Set_Temperature2 minValue=5 maxValue=25 step=1 					
+					Setpoint item=LR_Set_Temperature3 minValue=5 maxValue=25 step=1 					
+				}				
+			}			
+			Text label="Щори" icon="rollershutter"  {
+				Switch item=LR_East_Shutter01 				
+				Switch item=LR_East_Shutter02 				
+				Switch item=LR_East_Shutter03 				
+				Switch item=LR_East_Shutter04 				
+				Switch item=LR_South_Shutter01 				
+			}			
+		}		
+	}	
+	Frame label="Аквариум"  {
+		Text label="Аквариум" icon="fish"  {
+			Switch item=AQ_Heater1 icon="heater2" 			
+			Switch item=AQ_Cooler1 icon="cooler2" 			
+			Text item=AQ_Temp_Sensor1 valuecolor=[>28="red", >26="orange", >24="green", <=24="blue"]  {
+				Frame  {
+					Text item=AQ_Temp_MIN 					
+					Text item=AQ_Temp_MAX 					
+					Text item=AQ_TempDelta 					
+				}				
+				Frame  {
+					Switch item=Weather_Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week"] 					
+					Chart item=AQ_Temperature_Chart period=hrefresh=600 visibility=[Weather_Chart_Period==0] 					
+					Chart item=AQ_Temperature_Chart period=Drefresh=3600 visibility=[Weather_Chart_Period==1] 					
+					Chart item=AQ_Temperature_Chart period=Wrefresh=3600 visibility=[Weather_Chart_Period==2, Weather_Chart_Period==Uninitialized] 					
+					Chart item=AQ_Temperature_Chart period=Mrefresh=3600					
+				}				
+			}			
+			Switch item=AQ_Light1 			
+			Text label="Настройки" icon="settings"  {
+				Setpoint item=AQ_Set_Temperature minValue=20 maxValue=30 step=0.5 				
+			}			
+		}		
+	}	
+	Frame label="Administrative"  {
+		Text label="Mass-control" icon="settings"  {
+			Switch item=Heaters icon="heater2" mappings=[OFF="All heaters Off"] 			
+			Switch item=ALL_Reinitialize icon="settings" mappings=[1="System initialize"] 			
+			Group item=Heaters icon="heater2"  {
+				Switch item=LR_Heater1 				
+				Switch item=AQ_Heater1 				
+			}			
+			Group item=Coolers icon="cooler2"  {
+				Switch item=AQ_Cooler1 				
+			}			
+			Group item=Lights icon="light"  {
+				Switch item=AQ_Light1 				
+			}			
+		}		
+		Text label="IP Devices" icon="network"  {
+			Text item=IP_iPhone  {
+				Chart item=IP_iPhone period=Drefresh=3600				
+			}			
+			Text item=IP_Nexus  {
+				Chart item=IP_Nexus period=Drefresh=3600				
+			}			
+			Text item=IP_TV  {
+				Chart item=IP_TV period=Drefresh=3600				
+			}			
+			Switch item=IP_PC 			
+			Text  {
+				Chart period=Drefresh=3600				
+			}			
+			Text  {
+				Chart period=Drefresh=3600				
+			}			
+		}		
+	}	
+	Frame label="Weather"  {
+		Text item=Weather_Temperature valuecolor=[Weather_LastUpdate==Uninitialized="lightgray", Weather_LastUpdate>90="lightgray", >30="red", >25="orange", >10="green", <=5="blue"]  {
+			Frame  {
+				Text item=Weather_Temp_Max valuecolor=[>30="red", >25="orange", >10="green", <=5="blue"] 				
+				Text item=Weather_Temp_Min valuecolor=[>30="red", >25="orange", >10="green", <=5="blue"] 				
+				Text item=Weather_LastUpdate valuecolor=[Weather_LastUpdate>120="orange", Weather_LastUpdate>300="red"]  visibility=[Weather_LastUpdate>30] 				
+			}			
+			Frame  {
+				Switch item=Weather_Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week"] 				
+				Chart item=Weather_Chart period=hrefresh=600 visibility=[Weather_Chart_Period==0] 				
+				Chart item=Weather_Chart period=Drefresh=3600 visibility=[Weather_Chart_Period==1] 				
+				Chart item=Weather_Chart period=Wrefresh=3600 visibility=[Weather_Chart_Period==2, Weather_Chart_Period==Uninitialized] 				
+			}			
+		}		
+	}	
+	Frame label="Date"  {
+		Text item=Date 		
+	}	
+}

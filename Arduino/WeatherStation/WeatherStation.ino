@@ -73,10 +73,10 @@ void Publish_Data () {
 //   }  
     //OneWire DS18B20
     if(Temperature>-25&&Temperature<50) { 
-      int integerPart=(int)Temperature;
-      if(integerPart>9){
-       dtostrf(Temperature,6,3,strConvert);
-      } else { dtostrf(Temperature,5,3,strConvert); }
+//      int integerPart=(int)Temperature;
+       dtostrf(Temperature,1,3,strConvert);
+//      if(integerPart>9){
+//      } else { dtostrf(Temperature,5,3,strConvert); }
 //       Serial.print("Temp: ");   // print AQ temperature
 //       Serial.println(strConvert);    // to serial
        MQTT_Client.publish("Weather_temperature1",strConvert);  // send it to MQTT broker

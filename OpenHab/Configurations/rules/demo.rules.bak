@@ -1,0 +1,310 @@
+import org.openhab.core.library.types.*
+import org.openhab.core.persistence.*
+import org.openhab.model.script.actions.*
+
+var Number counter = 1
+var Timer timer = null
+/*
+rule Startup
+when 
+	System started
+then
+	say("Welcome at openHab!")
+end
+
+rule Goodbye
+when 
+	System shuts down
+then
+	say("Good bye!")
+end
+*/
+/*rule "Crontest"
+	when 
+		Time cron "0/15 * * * * ?"
+	then
+		say(counter)
+		counter = counter + 1
+end	
+
+/**
+ * This is a demo rule which simulates a real dimmer by reacting to increase/decrease commands 
+ * and posting an updated state on the bus 
+ */
+
+
+/**
+ * This rule demonstrates how a NumberItem can be used to easily control the local sound system.
+ * A selection widget in the UI provides easy access for this
+ */
+rule "Select Radio Station"
+	when
+		Item Radio_Station received command
+	then
+		switch(receivedCommand) {
+			case 0 : playStream(null)
+			case 1 : playStream("http://metafiles.gl-systemhaus.de/hr/hr3_2.m3u")
+			case 2 : playStream("http://mp3-live.swr3.de/swr3_m.m3u")
+			case 3 : playStream("http://edge.live.mp3.mdn.newmedia.nacamar.net/radioffh/livestream.mp3.m3u")
+		}
+end
+
+
+
+/**
+ * The following rules help initializing the demo items with some helpful states.
+ */
+
+rule "Initialize states of variables"
+	when
+		System started or Item ALL_Reinitialize received command
+	then 
+//Living room initialize	
+	sendCommand(LR_Heater1,OFF)   //default value of living room heater is OFF
+	postUpdate(LR_Heater1_mode,2)  // default mode is AUTO
+//	postUpdate(LR_Set_TemperatureON,20) // default manual temperature 20C
+//	postUpdate(LR_Set_Temperature1,16)  //16C during work hours
+//	postUpdate(LR_Set_Temperature2,20) // 20C when at home
+//	postUpdate(LR_Set_Temperature3,18) //20C when at home and sleeping /16C for Living room
+	postUpdate(LR_Temp_sensor1,20.0 + (25.0 - (Math::random * 50.0).intValue) / 10.0)
+//Aquarium initialize	
+	sendCommand(AQ_Heater1,OFF)  // default aquarium heater off
+	sendCommand(AQ_Cooler1,OFF)  // default aquarium cooler off
+	sendCommand(AQ_Light1,OFF)  // default aquarium light off
+//	postUpdate(AQ_Set_Temperature,25) // 25C initial aquarium temp value
+//	postUpdate(AQ_TempDelta,2) 
+end
+
+//rule "Evening shutters down"
+//	when
+//	then
+//end
+	
+ /* */ 
+rule "Update max and min temperatures"
+when
+	Item Weather_Temperature changed or
+	Time cron "0 0 0 * * ?" or
+	System started
+then	
+	postUpdate(Weather_Temp_Max, Weather_Temperature.maximumSince(now.toDateMidnight).state)
+	postUpdate(Weather_Temp_Min, Weather_Temperature.minimumSince(now.toDateMidnight).state)
+	postUpdate(AQ_Temp_MAX, AQ_Temp_Sensor1.maximumSince(now.toDateMidnight).state)
+	postUpdate(AQ_Temp_MIN, AQ_Temp_Sensor1.minimumSince(now.toDateMidnight).state)
+end
+
+/** shows how to use sensor values from the past */
+rule "Persistence Demo"
+when
+	Time cron "0 * * * * ?"
+then	
+	if(Weather_Temperature.changedSince(now.minusMinutes(1))) {
+		println("2 minutes ago, the temperature was " + Weather_Temperature.historicState(now.minusMinutes(2)) + " degrees.")		
+	}
+end /* */
+
+ 
+// Creates an item that stores the last update time of this item
+rule "Records last weather update time"
+when
+  Item Weather_Temperature received update
+then
+  postUpdate(Weather_LastUpdate, new DateTimeType())
+end
+/* */
+////////////////////////////////////////////////////////////////////////////////////////////
+	
+
+rule "TestIndicator ON during workhours"
+// PROGRAM1 During Work hours we check on each 1 hr the temperature and stop heating when reach 12C 
+when Time cron "0 */5 9,10,11,12,13,14,15,16,17 ? * MON-FRI" 
+then
+//LR
+	var float LR_Temp_Sensor1=new Float(LR_Temp_sensor1.state.toString())
+	var float LR_Temp_Set_TemperatureON=new Float(LR_Set_TemperatureON.state.toString())
+	var float LR_Temp_Set_Temperature1=new Float(LR_Set_Temperature1.state.toString())
+	if(LR_Heater1_mode.state==2) {
+ 		if(LR_Temp_Sensor1 < LR_Temp_Set_Temperature1) { 
+			sendCommand(LR_Heater1,ON)
+		} else { 
+			sendCommand(LR_Heater1,OFF)
+		} 
+	} else { 
+		if (LR_Heater1_mode.state==1&&LR_Temp_Sensor1<LR_Temp_Set_TemperatureON){
+			sendCommand(LR_Heater1,ON)
+		} else { 
+			sendCommand(LR_Heater1,OFF)
+		} 
+	}
+end
+
+rule "TestIndicator ON during non-working hours"
+//  PROGRAM2 During non-work, non-sleep hours we check on each 15 min the temperature and stop heating when reach 22C 
+when Time cron "0 */5 18,19,20,21,22,23,0,7,8 * * ?" 
+then
+//LR
+	var float LR_Temp_Sensor1=new Float(LR_Temp_sensor1.state.toString())
+	var float LR_Temp_Set_TemperatureON=new Float(LR_Set_TemperatureON.state.toString())
+	var float LR_Temp_Set_Temperature2=new Float(LR_Set_Temperature2.state.toString())
+	if(LR_Heater1_mode.state==2) {
+ 		if(LR_Temp_Sensor1 < LR_Temp_Set_Temperature2) { 
+			sendCommand(LR_Heater1,ON)
+		} else { 
+			sendCommand(LR_Heater1,OFF)
+		} 
+	} else { 
+		if (LR_Heater1_mode.state==1&&LR_Temp_Sensor1<LR_Temp_Set_TemperatureON){
+			sendCommand(LR_Heater1,ON)
+		} else { 
+			sendCommand(LR_Heater1,OFF)
+		} 
+	}
+//ROOM2
+//ROOM3
+end
+
+rule "TestIndicator ON during non-working sleep hours"
+// PROGRAM3 During non-work, sleep hours we check on each 15 min the temperature and stop heating when reach 18C 
+when Time cron "0 */15 1,2,3,4,5,6 * * ?" 
+then
+//LR
+	var float LR_Temp_Sensor1=new Float(LR_Temp_sensor1.state.toString())
+	var float LR_Temp_Set_TemperatureON=new Float(LR_Set_TemperatureON.state.toString())
+	var float LR_Temp_Set_Temperature3=new Float(LR_Set_Temperature3.state.toString())
+	if(LR_Heater1_mode.state==2) {
+ 		if(LR_Temp_Sensor1 < LR_Temp_Set_Temperature3) { 
+			sendCommand(LR_Heater1,ON)
+		} else { 
+			sendCommand(LR_Heater1,OFF)
+		} 
+	} else { 
+		if (LR_Heater1_mode.state==1&&LR_Temp_Sensor1<LR_Temp_Set_TemperatureON){
+			sendCommand(LR_Heater1,ON)
+		} else { 
+			sendCommand(LR_Heater1,OFF)
+		} 
+	}
+//ROOM2
+//ROOM3
+end
+
+rule "Heating during the day - Saturday and Sunday"
+when Time cron"0 */5 9,10,11,12,13,14,15,16,17 ? * SAT,SUN"
+then
+//LR
+	var float LR_Temp_Sensor1=new Float(LR_Temp_sensor1.state.toString())
+	var float LR_Temp_Set_TemperatureON=new Float(LR_Set_TemperatureON.state.toString())
+	var float LR_Temp_Set_Temperature2=new Float(LR_Set_Temperature2.state.toString())
+	if(LR_Heater1_mode.state==2) {
+ 		if(LR_Temp_Sensor1 < LR_Temp_Set_Temperature2) { 
+			sendCommand(LR_Heater1,ON)
+		} else { 
+			sendCommand(LR_Heater1,OFF)
+		} 
+	} else { 
+		if (LR_Heater1_mode.state==1&&LR_Temp_Sensor1<LR_Temp_Set_TemperatureON){
+			sendCommand(LR_Heater1,ON)
+		} else { 
+			sendCommand(LR_Heater1,OFF)
+		} 
+	}
+end
+
+/* LR Triggers */
+rule "HeatingIndicatorMode trigger"
+	when
+		Item LR_Heater1_mode received command
+	then
+	var float LR_Temp_Sensor1=new Float(LR_Temp_sensor1.state.toString())
+	var float LR_Temp_Set_TemperatureON=new Float(LR_Set_TemperatureON.state.toString())
+	switch(LR_Heater1_mode.state) {
+			case 0 : 	sendCommand(LR_Heater1,OFF)
+			
+			case 1 : 	if(LR_Temp_Sensor1<LR_Temp_Set_TemperatureON) {
+							sendCommand(LR_Heater1,ON)
+						} else {
+							sendCommand(LR_Heater1,OFF)
+						}
+			
+			default : 	println("Heat Indicator set to AUTO")
+		}
+end
+
+rule "LR Heater Set Temperature change"
+	when
+		Item LR_Set_TemperatureON received command
+		then
+			var float LR_Temp_Sensor1=new Float(LR_Temp_sensor1.state.toString())
+			var float LR_Temp_Set_TemperatureON=new Float(LR_Set_TemperatureON.state.toString())
+			postUpdate(LR_Heater1_mode,1)
+			if (LR_Temp_Sensor1<LR_Temp_Set_TemperatureON){
+				sendCommand(LR_Heater1,ON)
+			} else { 
+				sendCommand(LR_Heater1,OFF)
+			} 
+end
+
+/***************************AQUARIUM *********************************/
+rule "Aquarium logics"
+when Time cron "0 */15 * * * ?"  //do the check every 30 mins
+then
+var float aq_temp_sensor=new Float(AQ_Temp_Sensor1.state.toString())
+var float aq_temp_set_temp=new Float(AQ_Set_Temperature.state.toString())
+//If aquarium temp is lower than the set temperature - heat, otherwise do not heat 
+	if (aq_temp_sensor<aq_temp_set_temp) {  
+		sendCommand(AQ_Heater1,ON)
+	} else {
+		sendCommand(AQ_Heater1,OFF)
+	}
+//If aquarium temp different is higher than the 0.5 - start cooler, otherwise do not
+	if ((aq_temp_sensor-aq_temp_set_temp)>0.7) {
+		sendCommand(AQ_Cooler1,ON)
+	} else{
+		sendCommand(AQ_Cooler1,OFF)
+	}
+end
+
+rule "Aquarium light on"  // between 19:00 and 0:00 on every 5 min check
+when Time cron "0 */5 19-23 * * ?" 
+then 
+if(AQ_Light1.state==OFF) {
+	sendCommand(AQ_Light1,ON) 
+}
+end
+
+rule "Aquarium light off" // // between 0:00 and 19:00 on every 5 min check
+when Time cron "0 */5 0-18 * * ?"  
+then 
+if(AQ_Light1.state==ON) {
+	sendCommand(AQ_Light1,OFF) 
+}
+end
+
+ 
+rule "Temperature calculation"
+when Time cron "0 */5 * * * ?"
+when Item AQ_Temp_Sensor1 changed
+then {  
+val tmp1 = AQ_Temp_Sensor1.historicState(now.minusMinutes(35)).state as DecimalType
+val tmp2 = AQ_Temp_Sensor1.historicState(now.minusMinutes(30)).state as DecimalType
+val tmp3 = AQ_Temp_Sensor1.historicState(now.minusMinutes(25)).state as DecimalType
+val tmp4 = AQ_Temp_Sensor1.historicState(now.minusMinutes(20)).state as DecimalType
+val tmp5 = AQ_Temp_Sensor1.historicState(now.minusMinutes(15)).state as DecimalType
+val tmp6 = AQ_Temp_Sensor1.historicState(now.minusMinutes(10)).state as DecimalType
+val tmp7 = AQ_Temp_Sensor1.historicState(now.minusMinutes(5)).state as DecimalType
+val delta1 = tmp1 - tmp2  
+val delta2 = tmp2 - tmp3
+val delta3 = tmp3 - tmp4
+val delta4 = tmp4 - tmp5
+val delta5 = tmp5 - tmp6
+val delta6 = tmp6 - tmp7
+val deltaResult = (delta1 + delta2 + delta3)/3 - (delta4 + delta5 + delta6)/3 
+//var deltaResult = (delta6+delta5+delta4)/3
+
+//val Number tmp1 = AQ_Temp_Sensor1.historicState(now).state as DecimalType 	
+//postUpdate(AQ_TempDelta,AQ_Temp_Sensor1.historicState(now.minusHours(3)).state) }
+postUpdate(AQ_TempDelta,deltaResult) 
+}
+end
+*/
+
