@@ -101,7 +101,7 @@ void ICACHE_FLASH_ATTR CFG_Load()
 
 		INFO(" default configurations\r\n");
 
-		CFG_Save();
+//		CFG_Save();
 //	}
 	INFO("device_ID:%s\r\n",sysCfg.device_id);
 	INFO("MQTTHOST:%s\r\n",sysCfg.mqtt_host);
