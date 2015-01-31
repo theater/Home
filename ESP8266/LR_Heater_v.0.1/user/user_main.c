@@ -33,6 +33,7 @@
 #include "user_interface.h"
 #include "driver/ds18b20.h"
 #include <stdlib.h>
+#include "debug.h"
 
 #define sleepms(x) os_delay_us(x*1000);
 
@@ -165,9 +166,12 @@ void ICACHE_FLASH_ATTR mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		currGPIO2State=1;
 		}
 	}
+
 	// HERE ENDS THE BASIC LOGIC BY KONSTANTIN
 //	INFO("GPIO2 State: %d",GPIO_INPUT_GET(PIN_GPIO));
 	INFO("MQTT topic: %s, data: %s \r\n", topicBuf, dataBuf);
+//	os_free(topicBuf);
+//	os_free(dataBuf);
 }
 //===========================================================
 //		Kosio implementations
@@ -187,18 +191,26 @@ void user_init(void) {
 	uart_init(115200, 115200);
 	CFG_Load();
 	sleepms(1000);
+
 	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, SEC_NONSSL);
-	MQTT_InitClient(&mqttClient, sysCfg.device_id, sysCfg.mqtt_user, sysCfg.mqtt_pass, sysCfg.mqtt_keepalive);
+	//MQTT_InitConnection(&mqttClient, "192.168.11.122", 1880, 0);
+	MQTT_InitClient(&mqttClient, sysCfg.device_id, sysCfg.mqtt_user, sysCfg.mqtt_pass, sysCfg.mqtt_keepalive, 1);
+	//MQTT_InitClient(&mqttClient, "client_id", "user", "pass", 120, 1);
+
+//	MQTT_InitLWT(&mqttClient, "/lwt", "offline", 0, 0);
 	MQTT_OnConnected(&mqttClient, mqttConnectedCb);
 	MQTT_OnDisconnected(&mqttClient, mqttDisconnectedCb);
 	MQTT_OnPublished(&mqttClient, mqttPublishedCb);
 	MQTT_OnData(&mqttClient, mqttDataCb);
-	WIFI_Connect(sysCfg.sta_ssid, sysCfg.sta_pwd, wifiConnectCb);
+
+	INFO("device_ID:%s\r\n",sysCfg.device_id);
+	INFO("MQTTHOST:%s\r\n",sysCfg.mqtt_host);
 
 // initialize GPIO2
 	PIN_FUNC_SELECT(PIN_GPIO2_MUX, PIN_GPIO2_FUNC);
 	GPIO_OUTPUT_SET(PIN_GPIO, 0);
 	INFO("GPIO2 set to OFF\r\n");
+	WIFI_Connect(sysCfg.sta_ssid, sysCfg.sta_pwd, wifiConnectCb);
 
 	os_printf("\nReady\n");
 }

@@ -33,18 +33,16 @@
 #include "mem.h"
 #include "osapi.h"
 #include "user_interface.h"
-#include "espfs.h"
+
 #include "mqtt.h"
-#include "debug.h"
 #include "config.h"
 #include "user_config.h"
-#include "stdio.h"
-
+#include "debug.h"
 
 SYSCFG sysCfg;
 SAVE_FLAG saveFlag;
 
-void CFG_Save()
+void ICACHE_FLASH_ATTR CFG_Save()
 {
 	 spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
 	                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
@@ -68,11 +66,11 @@ void CFG_Save()
 	}
 }
 
-void CFG_Load()
+void ICACHE_FLASH_ATTR CFG_Load()
 {
 
 	INFO("\r\nload ...\r\n");
-	spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
+/*	spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
 				   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 	if (saveFlag.flag == 0) {
 		spi_flash_read((CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
@@ -81,7 +79,7 @@ void CFG_Load()
 		spi_flash_read((CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
 					   (uint32 *)&sysCfg, sizeof(SYSCFG));
 	}
-	if(sysCfg.cfg_holder != CFG_HOLDER){
+	if(sysCfg.cfg_holder != CFG_HOLDER){/**/
 		os_memset(&sysCfg, 0x00, sizeof sysCfg);
 
 
@@ -104,6 +102,7 @@ void CFG_Load()
 		INFO(" default configurations\r\n");
 
 		CFG_Save();
-	}
-
+//	}
+	INFO("device_ID:%s\r\n",sysCfg.device_id);
+	INFO("MQTTHOST:%s\r\n",sysCfg.mqtt_host);
 }

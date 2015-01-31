@@ -11,7 +11,7 @@
 #define WIFI_AP_PASSWORD	"00000000"
 #define PLATFORM_DEBUG		true
 
-#define CFG_HOLDER	0x00FF55A4
+#define CFG_HOLDER	0x00FF55A4  /* Change this value to load default configurations */
 #define CFG_LOCATION	0x3C	/* Please don't change or if you know what you doing */
 
 // MQTT USER CONFIG
@@ -22,8 +22,8 @@
 #define MQTT_KEEPALIVE		60	 /*second*/
 
 #define MQTT_CLIENT_ID		"LR_HEATER1"
-#define MQTT_USER			"kdjfhkjd"
-#define MQTT_PASS			"sdjfghdj"
+#define MQTT_USER			""
+#define MQTT_PASS			""
 
 
 #define STA_SSID WIFI_CLIENTSSID
@@ -32,7 +32,6 @@
 
 #define MQTT_RECONNECT_TIMEOUT 	5	/*second*/
 
-#define CLIENT_SSL_ENABLE 0
 #define DEFAULT_SECURITY	0
 
 #define QUEUE_BUFFER_SIZE		 		2048

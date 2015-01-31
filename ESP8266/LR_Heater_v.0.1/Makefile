@@ -98,6 +98,7 @@ MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
 
 FW_FILE_1	:= $(addprefix $(FW_BASE)/,$(FW_FILE_1).bin)
 FW_FILE_2	:= $(addprefix $(FW_BASE)/,$(FW_FILE_2).bin)
+BLANKER	:= $(addprefix $(SDK_BASE)/,bin/blank.bin)
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
@@ -145,7 +146,10 @@ firmware:
 	$(Q) mkdir -p $@
 
 flash: $(FW_FILE_1) $(FW_FILE_2)
-	$(ESPTOOL) -p $(ESPPORT) write_flash 0x00000 firmware/0x00000.bin 0x40000 firmware/0x40000.bin
+	$(ESPTOOL) -p $(ESPPORT) write_flash 0x00000 firmware/0x00000.bin 0x3C000 $(BLANKER) 0x40000 firmware/0x40000.bin
+
+blanker: $(FW_FILE_1) $(FW_FILE_2)
+	$(ESPTOOL) -p $(ESPPORT) write_flash 0x00000 $(BLANKER) 0x3C000 $(BLANKER) 0x40000 $(BLANKER)
 
 webpages.espfs: cleanwebpages
 	cd html; find | ../mkespfsimage/mkespfsimage.exe > ../webpages.espfs; cd ..
