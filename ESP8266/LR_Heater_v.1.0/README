@@ -1,6 +1,0 @@
-ESP-HTTPD: http://www.esp8266.com/viewtopic.php?f=6&t=376
-Tuan's MQTT: https://github.com/tuanpmt/esp_mqtt
-This one combines both
-
-This code is intended to connect to my MQTT server and to be used from OpenHAB without too much local logics.
-Only one pin is configured - GPIO2.
