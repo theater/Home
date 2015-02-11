@@ -192,7 +192,7 @@ void ICACHE_FLASH_ATTR tplHEATER(HttpdConnData *connData, char *token, void **ar
 //	currMqttState=GPIO_INPUT_GET(PIN_GPIO);
 	os_strcpy(buff, "Unknown");
 	if (os_strcmp(token, "HEATER_status")==0) {
-		if (currGPIO5State) {
+		if (GPIO_INPUT_GET(PIN_GPIO5)) {
 				os_strcpy(buff, "ON");
 			} else {
 			os_strcpy(buff, "OFF");
@@ -208,7 +208,7 @@ void ICACHE_FLASH_ATTR tplFAN(HttpdConnData *connData, char *token, void **arg) 
 //	currMqttState=GPIO_INPUT_GET(PIN_GPIO);
 	os_strcpy(buff, "Unknown");
 	if (os_strcmp(token, "FAN_status")==0) {
-		if (currGPIO12State) {
+		if (GPIO_INPUT_GET(PIN_GPIO12)) {
 				os_strcpy(buff, "ON");
 			} else {
 			os_strcpy(buff, "OFF");
@@ -223,7 +223,7 @@ void ICACHE_FLASH_ATTR tplBOILER(HttpdConnData *connData, char *token, void **ar
 //	currMqttState=GPIO_INPUT_GET(PIN_GPIO);
 	os_strcpy(buff, "Unknown");
 	if (os_strcmp(token, "BOILER_status")==0) {
-		if (currGPIO14State) {
+		if (GPIO_INPUT_GET(PIN_GPIO14)) {
 				os_strcpy(buff, "ON");
 			} else {
 			os_strcpy(buff, "OFF");
@@ -245,6 +245,27 @@ void ICACHE_FLASH_ATTR tplIndex(HttpdConnData *connData, char *token, void **arg
 	}
 	if (os_strcmp(token, "BathTemperature")==0) {
 		os_sprintf(buff, "%s °C",DHT22_Temperature);
+	}
+	if (os_strcmp(token, "FAN")==0) {
+		if (GPIO_INPUT_GET(PIN_GPIO12)) {
+			os_strcpy(buff, "ON");
+		} else {
+			os_strcpy(buff, "OFF");
+		}
+	}
+	if (os_strcmp(token, "BOILER")==0) {
+		if (GPIO_INPUT_GET(PIN_GPIO14)) {
+			os_strcpy(buff, "ON");
+		} else {
+			os_strcpy(buff, "OFF");
+		}
+	}
+	if (os_strcmp(token, "HEATER")==0) {
+		if (GPIO_INPUT_GET(PIN_GPIO5)) {
+			os_strcpy(buff, "ON");
+		} else {
+			os_strcpy(buff, "OFF");
+		}
 	}
 
 //	espconn_sent(connData->conn, (uint8 *)buff, os_strlen(buff));

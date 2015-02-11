@@ -9,9 +9,9 @@
 <h1>Bathroom ESP8266 page</h1>
 <ul>
 <li>WI-FI Configuration <a href="/wifi"> HERE</a>.</li>
-<li>FAN status<a href="fan.tpl"> HERE</a>.</li>
-<li>HEATER status<a href="heater.tpl"> HERE</a>.</li>
-<li>BOILER status<a href="boiler.tpl"> HERE</a>.</li>
+<li>FAN status %FAN%. <a href="fan.tpl">Manual options HERE</a>.</li>
+<li>HEATER status %HEATER%. <a href="heater.tpl">Manual options HERE</a>.</li>
+<li>BOILER status %BOILER%.<a href="boiler.tpl">Manual options HERE</a>.</li>
 <li>Boiler temperature: %BoilerTemperature%</li>
 <li>Humidity: %Humidity%</li>
 <li>Room temperature: %BathTemperature%</li>
