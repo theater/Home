@@ -48,6 +48,10 @@ LOCAL os_timer_t ds18b20_timer;
 LOCAL os_timer_t dht22_timer;
 extern int ets_uart_printf(const char *fmt, ...);
 int (*console_printf)(const char *fmt, ...) = ets_uart_printf;
+// INPUT PIN READ
+LOCAL os_timer_t input_pin_timer;
+int prev_input_pin_state=0,curr_input_pin_state=0;
+
 
 int ds18b20();
 LOCAL void ICACHE_FLASH_ATTR ds18b20_cb(void *arg)
@@ -346,6 +350,31 @@ LOCAL void ICACHE_FLASH_ATTR dht22_cb(void *arg)
 	}
 }
 
+LOCAL void ICACHE_FLASH_ATTR read_input_pin(void *arg)
+{
+	sleepms(50);  // debounce time
+	if(!GPIO_INPUT_GET(PIN_GPIO13)) {
+		curr_input_pin_state=1;
+//		console_printf("GPIO2_CLOSED_BEFORE_IF\r\n");
+		if(prev_input_pin_state!=curr_input_pin_state) {
+			console_printf("GPIO13 CLOSED...");
+			GPIO_OUTPUT_SET(PIN_GPIO12, curr_input_pin_state);
+			MQTT_Publish(&mqttClient,PIN_GPIO12_TOPIC,"ON",2,0,0);
+			prev_input_pin_state=curr_input_pin_state;
+		}
+	} else {
+		curr_input_pin_state=0;
+		//		console_printf("GPIO13_OPEN_BEFORE_IF\r\n");
+				if(prev_input_pin_state!=curr_input_pin_state) {
+					console_printf("GPIO13 OPEN...");
+					GPIO_OUTPUT_SET(PIN_GPIO12, 0);
+					MQTT_Publish(&mqttClient,PIN_GPIO12_TOPIC,"OFF",3,0,0);
+					prev_input_pin_state=curr_input_pin_state;
+		}
+	}
+}
+
+
 //Main routine. Initialize stdout, the I/O and the webserver and we're done.
 void user_init(void) {
 // HTTPD
@@ -375,11 +404,17 @@ void user_init(void) {
 	os_timer_setfn(&ds18b20_timer, (os_timer_func_t *)ds18b20_cb, (void *)0);
 	os_timer_arm(&ds18b20_timer, DELAY, 1);
 // DHT22 initialize
-	DHTInit(DHT11, DELAY);
+	DHTInit(DHT22, DELAY);
 	os_timer_disarm(&dht22_timer);
 	os_timer_setfn(&dht22_timer, (os_timer_func_t *)dht22_cb, (void *)0);
 	os_timer_arm(&dht22_timer, DELAY, 1);
-
+// INPUT PIN initialize
+		os_timer_disarm(&input_pin_timer); // Disarm input pin timer
+		os_timer_setfn(&input_pin_timer, (os_timer_func_t *)read_input_pin, NULL); // Setup input pin timer
+		os_timer_arm(&input_pin_timer, 500, 1); // Arm input pin timer, 1sec, repeat
+		gpio_output_set(0, 0, 0, BIT13); // Set GPIO13 as input
+	//	PIN_PULLDWN_DIS(PIN_GPIO2_MUX); // Disable pulldown
+		PIN_PULLUP_EN(PIN_GPIO13_MUX); // Enable pullup
 
 // initialize GPIO12
 	PIN_FUNC_SELECT(PIN_GPIO12_MUX, PIN_GPIO12_FUNC);
