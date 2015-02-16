@@ -352,7 +352,7 @@ LOCAL void ICACHE_FLASH_ATTR dht22_cb(void *arg)
 
 LOCAL void ICACHE_FLASH_ATTR read_input_pin(void *arg)
 {
-	sleepms(50);  // debounce time
+	sleepms(75);  // debounce time
 	if(!GPIO_INPUT_GET(PIN_GPIO13)) {
 		curr_input_pin_state=1;
 //		console_printf("GPIO2_CLOSED_BEFORE_IF\r\n");
@@ -364,7 +364,7 @@ LOCAL void ICACHE_FLASH_ATTR read_input_pin(void *arg)
 		}
 	} else {
 		curr_input_pin_state=0;
-		//		console_printf("GPIO13_OPEN_BEFORE_IF\r\n");
+//				console_printf("GPIO13_OPEN_BEFORE_IF\r\n");
 				if(prev_input_pin_state!=curr_input_pin_state) {
 					console_printf("GPIO13 OPEN...");
 					GPIO_OUTPUT_SET(PIN_GPIO12, 0);
@@ -409,12 +409,14 @@ void user_init(void) {
 	os_timer_setfn(&dht22_timer, (os_timer_func_t *)dht22_cb, (void *)0);
 	os_timer_arm(&dht22_timer, DELAY, 1);
 // INPUT PIN initialize
-		os_timer_disarm(&input_pin_timer); // Disarm input pin timer
-		os_timer_setfn(&input_pin_timer, (os_timer_func_t *)read_input_pin, NULL); // Setup input pin timer
-		os_timer_arm(&input_pin_timer, 500, 1); // Arm input pin timer, 1sec, repeat
-		gpio_output_set(0, 0, 0, BIT13); // Set GPIO13 as input
-	//	PIN_PULLDWN_DIS(PIN_GPIO2_MUX); // Disable pulldown
-		PIN_PULLUP_EN(PIN_GPIO13_MUX); // Enable pullup
+	os_timer_disarm(&input_pin_timer); // Disarm input pin timer
+	os_timer_setfn(&input_pin_timer, (os_timer_func_t *)read_input_pin, NULL); // Setup input pin timer
+	os_timer_arm(&input_pin_timer, 500, 1); // Arm input pin timer, 0,5sec, repeat
+	PIN_FUNC_SELECT(PIN_GPIO13_MUX, PIN_GPIO13_FUNC);
+	gpio_output_set(0, 0, 0, BIT13); // Set GPIO13 as input
+	PIN_PULLDWN_DIS(PIN_GPIO13_MUX); // Disable pulldown
+	PIN_PULLUP_EN(PIN_GPIO13_MUX); // Enable pullup
+	console_printf("Input pin INITIALIZED ! ! !");
 
 // initialize GPIO12
 	PIN_FUNC_SELECT(PIN_GPIO12_MUX, PIN_GPIO12_FUNC);
