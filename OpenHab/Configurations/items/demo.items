@@ -12,19 +12,29 @@ Group	Modes	"All indicator modes [%d]"	(All)
 Group	LR	"Дневна стая"	<living>
 Group	LR_Programs	(LR)	
 Group 	IP_Devices (All,Persisted_items)
+Group gWeather_Humidity (All)
+Group gWeather_Temperature (All)
+Group gWeather_pressure (All)
+Group EndOfEveryDayPersist "Group for persisting once a day" (All)
+Group EveryChangePersist "Group for persisting each change" (All)
+Group CompareAverage "Group for comparing forecast and LR average"
+ 
 // global items
 Number	ALL_Reinitialize	"Initialize system"	(All)	
 
 //  Living room
-Switch	LR_Heater1	"Отопление - дневна"	<heater2>	(All,Heaters,LR)	
+Switch	LR_Heater1	"Отопление - дневна"	<heater2>	(All,Heaters,LR)	 { mqtt=">[mqtt:LR_HEATER1_GPIO2:command:*:${command}]" }
+Switch	LR_Heater1_state	"Отопление - дневна"	<heater2>	(All,Heaters,LR)	 { mqtt="<[mqtt:LR_HEATER1_GPIO2_CB:command:default]" }
 Number	LR_Heater1_mode	"Режим"	<network>	(All,Modes,LR,Persisted_items)	
-Number	LR_Temp_sensor1	"Дневна стая [%.1f °C]"	<temperature>	(All,Sensors,LR,Sensors) { mqtt="<[mqtt:LR_Temp_Sensor1:state:default" } // onewire="28.FF5959201400#temperature"	 
+Number	LR_Temp_sensor1	"Т °C в дневна [%.1f °C]"	<temperature>	(All,Sensors,LR,Sensors) { mqtt="<[mqtt:LR_Temp_Sensor1:state:default" } // onewire="28.FF5959201400#temperature"	 
 Number	LR_Temp_sensor2	"Т °C в дневна DHT11 [%.1f °C]"	<temperature>	(All,Sensors,LR,Sensors) { mqtt="<[mqtt:LR_Temp_Sensor2:state:default" } // onewire="28.FF5959201400#temperature"
 Number	LR_Humidity_sensor1	"Влажност в дневна [%.1f %%]"	<temperature>	(All,Sensors,LR,Sensors) { mqtt="<[mqtt:LR_Humidity_sensor1:state:default" } // onewire="28.FF5959201400#temperature"
-Number	LR_Set_TemperatureON	"Manual [%.1f °C]"	<temperature>	(All,LR,Persisted_items)	
-Number	LR_Set_Temperature1	"Work [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
-Number	LR_Set_Temperature2	"Home [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
-Number	LR_Set_Temperature3	"Sleep [%.1f °C]"	<temperature>	(LR,LR_Programs,Persisted_items)	
+Number LR_Calculated_Time "Пресметнат интервал от време [%.2f hr]" <calendar> (All,LR,Persisted_items)
+Number LR_Set_Time "Зададен интервал от време [%.2f hr]" <calendar> (All,LR,Persisted_items)
+Number LR_Heater_last_ONtime "Last time LR heater ON  [%1$tA, %1$tR]" <clock> (All,LR,EveryChangePersist)
+Number LR_Heater_last_OFFtime "Last time LR heater OFF [%1$tA, %1$tR]" <clock> (All,LR,EveryChangePersist)
+	
+Number LR_Temp_avg "Daily average [%.1f °C]" <temperature> (EndOfEveryDayPersist,CompareAverage)
 //Switch	LR_Presense_1	"Има ли някой :)"	<parents>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Presense_1:state:default" } // onewire="28.FF5959201400#temperature"
 Rollershutter	LR_East_Shutter01	"Щора,изток - прозорец-кухня"	(All,LR,Roller_Shutters)	
 Rollershutter	LR_East_Shutter02	"Щора,изток - врата-кухня"	(All,LR,Roller_Shutters)	
@@ -33,12 +43,34 @@ Rollershutter	LR_East_Shutter04	"Щора,изток - врата-хол"	(All,L
 Rollershutter	LR_South_Shutter01	"Щора,южна - прозорец"	(All,LR,Roller_Shutters)
 DateTime	LR_Temp_sensor1_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
 DateTime	LR_Humidity_sensor1_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
-	
+
+
+// BATHROOM
+Switch	BR_Fan	"Вентилатор"	<fan>	(All,Heaters,BR)	 { mqtt=">[mqtt:BR_FAN:command:*:${command}]" }
+Switch	BR_Fan_state	"Вентилатор"	<fan>	(All,Heaters,BR)	 { mqtt="<[mqtt:BR_FAN_CB:command:default]" }
+Switch	BR_Heater	"Отопление - баня"	<heater2>	(All,Heaters,BR)	 { mqtt=">[mqtt:BR_HEATER:command:*:${command}]" }
+Switch	BR_Heater_state	"Отопление - баня"	<heater2>	(All,Heaters,BR)	 { mqtt="<[mqtt:BR_HEATER_CB:command:default]" }
+Switch	BR_Boiler	"Бойлер"	<boiler>	(All,Heaters,BR)	 { mqtt=">[mqtt:BR_BOILER:command:*:${command}]" }
+Switch	BR_Boiler_state	"Бойлер"	<boiler>	(All,Heaters,BR)	 { mqtt="<[mqtt:BR_BOILER_CB:command:default]" }
+Number	BR_Temp_Boiler	"Бойлер [%.1f °C]"	<temperature>	(All,Sensors,BR,Sensors) { mqtt="<[mqtt:BR_BOILER_TEMP_SENSOR:state:default" } // onewire="28.FF5959201400#temperature"
+Number	BR_Humidity_sensor	"Влажност в баня [%.1f %%]"	<temperature>	(All,Sensors,BR) { mqtt="<[mqtt:BR_H_SENSOR:state:default" } // onewire="28.FF5959201400#temperature"
+Number	BR_Temp_sensor	"Температура в баня [%.1f °C]"	<temperature>	(All,Sensors,BR) { mqtt="<[mqtt:BR_TEMP_SENSOR:state:default" } // onewire="28.FF5959201400#temperature"
+Number BR_Temp_Boiler_LastUpdate "Last Update [%1$ta %1$tR]"	<clock> (All,BR)
+Number BR_Humidity_sensor_LastUpdate "Last Update [%1$ta %1$tR]"	<clock> (All,BR)
+Number BR_Temp_sensor_LastUpdate "Last Update [%1$ta %1$tR]"	<clock> (All,BR)
+Number BR_Temp_Boiler_Set "Зададена температура бойлер [%.1f °C]" <temperature> (All,BR,Persisted_items)
+Number BR_Temp_Room_Set "Зададена температура[%.1f °C]" <temperature> (All,BR,Persisted_items)
+Number BR_Humidity_Set  "Зададена влажност[%.1f %%]" <temperature> (All,BR,Persisted_items)
+Number BR_Mode "Режим" <network> (All,Modes,Persisted_items) { mqtt=">[mqtt:BR_Mode:command:*:${command}]" }
+DateTime BR_Boiler_last_ONtime "Last time Boiler ON [%1$tA, %1$tR]" <clock> (All,BR,EveryChangePersist)
+DateTime BR_Boiler_last_OFFtime "Last time Boiler OFF [%1$tA, %1$tR]" <clock> (All,BR,EveryChangePersist)
+
+
 
 //  Aquarium
 Group	AQ_Temperature_Chart
 Number	AQ_Temperature_Chart_Period	(AQ_Temperature_Chart,Persisted_items)	
-Number	AQ_Temp_Sensor1	"Аквариум [%.1f °C]"	<temperature>	(All,Sensors,Aquarium,AQ_Temperature_Chart)		{ mqtt="<[mqtt:AQ_Temp_Sensor1:state:default" } //onewire="28.5E74D2050000#temperature"
+Number	AQ_Temp_Sensor1	"Температура  [%.1f °C]"	<temperature>	(All,Sensors,Aquarium,AQ_Temperature_Chart)		{ mqtt="<[mqtt:AQ_Temp_Sensor1:state:default" } //onewire="28.5E74D2050000#temperature"
 Number AQ_Logics_mode "Режим" <network> (All,Modes,AQ,Persisted_items)
 Switch	AQ_Heater1	"Нагревател"	<heater2>	(All,Heaters,Aquarium,Persisted_items)		{ mqtt=">[mqtt:AQ_Heater1:command:*:${command}]" } //gpio="pin:47 activelow:yes",  
 Switch	AQ_Cooler1	"Охладител"	<cooler2> (All,Coolers,Aquarium,Persisted_items) 	{ mqtt=">[mqtt:AQ_Cooler1:command:*:${command}]"}   // gpio="pin:45 activelow:yes",
@@ -52,21 +84,29 @@ DateTime AQ_Temp_Sensor1_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
 //Weather
 Group	Weather_Chart	(Weather)
 //My Station:
-Number	Weather_Temp_Max	"Todays Maximum [%.1f °C]"	<temperature>	(Weather_Chart)	
-Number	Weather_Temp_Min	"Todays Minimum [%.1f °C]"	<temperature>	(Weather_Chart)	
+Number	Weather_Temp_Max	"Todays Maximum [%.1f °C]"	<temperature>	(EndOfEveryDayPersist)	
+Number	Weather_Temp_Min	"Todays Minimum [%.1f °C]"	<temperature>	(EndOfEveryDayPersist)	
 Number Weather_pressure_set "Altimeter setting [%d hPA]" <temperature> (All,Sensors) { mqtt=">[mqtt:Weather_pressure_set:command:*:default" }
-Number Weather_pressure "Outside Pressure [%d hPA]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_pressure:state:default" }
-Number Weather_humidity "Outside Humidity [%d %%]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_humidity:state:default" }
-Number Weather_temperature1 "Outside Temperature [%.1f °C]" <temperature> (All,Sensors)
+Number Weather_pressure "Outside Pressure [%d hPA]" <temperature> (All,Sensors,gWeather_pressure) { mqtt="<[mqtt:Weather_pressure:state:default" }
+Number Weather_humidity "Outside Humidity [%d %%]" <temperature> (All,Sensors,gWeather_Humidity) { mqtt="<[mqtt:Weather_humidity:state:default" }
+Number Weather_temperature1 "Outside Temperature [%.1f °C]" <temperature> (All,Sensors,gWeather_Temperature)
 Number Weather_temperature2 "DS18B20 [%.1f °C]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_temperature1:state:default" }
 // Internet weather:
 // UNDERGROUND WEATHER
-Number	Weather_pressure_wunderground	"Underground Pressure [%.1f hPA]"	<temperature> (All,Sensors)		{ http="<[http://api.wunderground.com/api/77b63e591e5c67e9/conditions/q/pws:ISOFIASO7.xml:1200000:XSLT(wunderground_pressure.xsl)]" }
-Number	Weather_temperature_wunderground	"Underground Temperature [%.1f °C]"	<temperature> (All,Sensors)		{ http="<[http://api.wunderground.com/api/77b63e591e5c67e9/conditions/q/pws:ISOFIASO7.xml:1200000:XSLT(wunderground_temperature.xsl)]" }
-Number	Weather_humidity_wunderground	"Underground Humidity [%d %%]"	<temperature> (All,Sensors)		{ http="<[http://api.wunderground.com/api/77b63e591e5c67e9/conditions/q/pws:ISOFIASO7.xml:1200000:XSLT(wunderground_humidity.xsl)]" }
+Number Weather_temperature_Max_wunderground "Underground Temp MAX [%.1f °C" (EndOfEveryDayPersist)
+Number Weather_temperature_Min_wunderground "Underground Temp MIN [%.1f °C" (EndOfEveryDayPersist)
+Number	Weather_pressure_wunderground	"Underground Pressure [%.1f hPA]"	<temperature> (All,Sensors,gWeather_pressure)		{ http="<[http://api.wunderground.com/api/77b63e591e5c67e9/conditions/q/pws:ISOFIASO7.xml:1200000:XSLT(wunderground_pressure.xsl)]" }
+Number	Weather_temperature_wunderground	"Underground Temperature [%.1f °C]"	<temperature> (All,Sensors,gWeather_Temperature)		{ http="<[http://api.wunderground.com/api/77b63e591e5c67e9/conditions/q/pws:ISOFIASO7.xml:1200000:XSLT(wunderground_temperature.xsl)]" }
+String	Weather_humidity_wunderground	"Underground Humidity [%s]"	<temperature> (All,Sensors,gWeather_Humidity)		{ http="<[http://api.wunderground.com/api/77b63e591e5c67e9/conditions/q/pws:ISOFIASO7.xml:1200000:XSLT(wunderground_humidity.xsl)]" }
 // YAHOO WEATHER
-Number	Weather_Temperature_yahoo	"Yahoo temperature [%.1f]"	<temperature>	(Weather_Chart)		{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_temperature.xsl)]" }
-Number	Weather_humidity_yahoo "Yahoo Humidity [%.1f %%]"	<temperature>	(All,Sensors)	{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_humidity.xsl)]" }
+Number Weather_temperature_Max_yahoo "Yahoo Temp MAX [%.1f °C]" (EndOfEveryDayPersist)
+Number Weather_temperature_Min_yahoo "Yahoo Temp MIN [%.1f °C]" (EndOfEveryDayPersist)
+Number	Weather_Temperature_yahoo	"Yahoo temperature [%.1f]"	<temperature>	(Weather_Chart,gWeather_Temperature)		{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_temperature.xsl)]" }
+Number	Weather_humidity_yahoo "Yahoo Humidity [%.1f %%]"	<temperature>	(All,Sensors,gWeather_Humidity)	{ http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_humidity.xsl)]" }
+Number Weather_forecast_yahoo_high "Yahoo Tomorrow high [%.1f °C]" <temperature>  { http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_forecast_high.xsl)]" }
+Number Weather_forecast_yahoo_low "Yahoo Tomorrow low [%.1f °C]" <temperature>  { http="<[http://weather.yahooapis.com/forecastrss?w=839722&u=c:60000:XSLT(yahoo_weather_forecast_low.xsl)]" }
+Number Weather_forecast_yahoo_avg "Yahoo Tomorrow Average [%.1f °C]" <temperature> (CompareAverage)
+
 Number Weather_Station_count "Resets count [%d]"<network> (All)  { mqtt="<[mqtt:Weather_Station_count:state:default" }
 
 DateTime	Date	"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ ntp="Europe/Berlin:de_DE" }
@@ -86,6 +126,8 @@ Switch  IP_Beaglebone "BeagleBone" <network> (IP_Devices,Persisted_items) { nh="
 Switch  IP_Router "TP-Link" <network> (IP_Devices,Persisted_items) { nh="192.168.254.1" }
 Switch  IP_AQ_Arduino "Arduino Aquarium" <network> (IP_Devices,Persisted_items) { nh="192.168.254.35" }
 Switch  IP_Weather_Station_Arduino "Arduino Weather" <network> (IP_Devices,Persisted_items) { nh="192.168.254.36" }
+Switch  IP_ESP8266_LR_HEATER1 "ESP LR Heater" <network> (IP_Devices,Persisted_items) { nh="192.168.254.41" }
+Switch  IP_BR_ESP01 "BR ESP01" <network> (IP_Devices,Persisted_items) { nh="192.168.254.42" }
 
 
 Number	Chart_Period	"Chart Period"	//used to setup the periods of charts as temporary variable
@@ -121,3 +163,7 @@ Switch BackupSystem "Backup the configuration" <settings> (System) // {exec="/ro
 
 // PLAYGROUND
 //Number SendMail <network> 
+Switch ESP8266 "ESP8266" <network> { mqtt=">[mqtt:LR_HEATER1_GPIO4:command:*:${command}]" }
+Switch ESP8266cb "ESP8266cb" <light> { mqtt="<[mqtt:LR_HEATER1_GPIO4_CB:command:default]" }
+Number ESP8266_temp "ESP8266 [%.1f]" <temperature> { mqtt="<[mqtt:ESP8266_temp:state:default" }
+Number TestButton "TestButton" <network>
