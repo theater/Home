@@ -37,12 +37,13 @@ sitemap demo label="Main Menu"
 					}				
 				}
 				Text item=LR_Heater1_state icon="heater2"
+				Switch item=LR_Heater1 icon="heater2"
 				Text item=LR_Heater_last_ONtime
 				Text item=LR_Heater_last_OFFtime
 			}	
 			Frame label="Auto" visibility=[LR_Heater1_mode==2]{					
 				Setpoint item=LR_Set_TemperatureON minValue=5 maxValue=25 step=1 visibility=[LR_Heater1_mode==1]
-					Setpoint item=LR_Set_Time minValue=0 maxValue=10 step=0.25 					
+					Setpoint item=LR_Set_Time minValue=0 maxValue=10 step=0.5 					
 					Text item=LR_Calculated_Time
 					Text item=LR_Temp_avg {	
 						Frame  {
@@ -64,7 +65,7 @@ sitemap demo label="Main Menu"
 		Text label="Кухня" icon="kitchen" { Text label="placeholder" icon="kitchen"	}
 		Text item=BR_Temp_sensor icon="bath" label="Баня [%.1f °C]" {	
 			Frame label="Настройки" {	
-				Switch item=BR_Mode mappings=[0="All off", 1="manual", 2="auto"]
+				Switch item=BR_Mode mappings=[0="OFF", 1="manual", 2="auto"]
 				Text item=BR_Temp_sensor valuecolor=[ BR_Temp_sensor_LastUpdate>120="lightgray", >25="orange", >17="green", <=17="blue"] {
 					Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
 					Chart item=BR_Temp_sensor period=h refresh=60 visibility=[Chart_Period==0]
@@ -82,7 +83,7 @@ sitemap demo label="Main Menu"
 					Chart item=BR_Humidity_sensor period=Y refresh=3600 visibility=[Chart_Period==4]
 				
 				}
-				Text item=BR_Temp_Boiler valuecolor=[ BR_Temp_Boiler_LastUpdate>120="lightgray", >60="red", >35="orange", <=35="blue"] {
+				Text item=BR_Temp_Boiler valuecolor=[ BR_Temp_Boiler_LastUpdate>120="lightgray", >60="red", >35="orange", >27="green", <=27="blue"] {
 					Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
 					Chart item=BR_Temp_Boiler period=h refresh=60 visibility=[Chart_Period==0]
 					Chart item=BR_Temp_Boiler period=D refresh=3600 visibility=[Chart_Period==1]
@@ -92,14 +93,14 @@ sitemap demo label="Main Menu"
 				}
 				Setpoint item=BR_Temp_Room_Set minValue=10 maxValue=30 step=1 visibility=[BR_Mode==2] 
 				Setpoint item=BR_Humidity_Set minValue=5 maxValue=100 step=5 visibility=[BR_Mode==2]
+				Setpoint item=BR_Temp_Boiler_Set minValue=10 maxValue=80 step=5
 			}
 			Frame label="Ръчен режим" visibility=[BR_Mode==1] {	
-				Setpoint item=BR_Temp_Boiler_Set minValue=10 maxValue=90 step=5
 				Switch item=BR_Boiler
 				Switch item=BR_Fan
 				Switch item=BR_Heater
 			}
-			Frame label="Активни статуси" {
+			Frame label="Статуси" {
 				Text item=BR_Boiler_state
 				Text item=BR_Fan_state
 				Text item=BR_Heater_state

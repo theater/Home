@@ -13,8 +13,10 @@ Strategies {
 Items {
 	Persisted_items*,Weather_Chart* : strategy = everyHour, everyFiveMinutes, restoreOnStartup
 	Sensors* : strategy = everyFiveMinutes, restoreOnStartup
-	DailyPersist*: strategy = endOfEveryDay
-	CompareAverage*: strategy = everyHour
+	EndOfEveryDayPersist*: strategy = endOfEveryDay, restoreOnStartup
+	CompareAverage*: strategy = everyChange, restoreOnStartup
 	ESP8266_temp: strategy= everyThirtyMinutes
-	EveryChangePersist*: strategy = everyChange
+	EveryChangePersist*: strategy = everyChange, restoreOnStartup
+	LR_Avg: strategy=endOfEveryDay, restoreOnStartup
+	EveryHourPersist* : strategy = everyHour, restoreOnStartup
 }

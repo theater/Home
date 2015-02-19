@@ -41,7 +41,7 @@ then
 end
 
 rule "Daily end of the day"
-when Time cron "0 59 23 * * ?" 
+when Time cron "0 55 23 * * ?" 
 then
     logDebug("RULES","Daily END of ther day")
     postUpdate(LR_Temp_avg,LR_Temp_sensor1.averageSince(now.toDateMidnight))
@@ -205,6 +205,25 @@ when  Item BR_Humidity_sensor received update then postUpdate(BR_Humidity_sensor
 
 rule "Bathroom Temperature update time"
 when  Item BR_Temp_sensor received update then postUpdate(BR_Temp_sensor_LastUpdate, new DateTimeType()) end
+
+rule "Boiler manual change"
+when Item BR_Boiler_state received command then
+	if(BR_Boiler_state.state==ON) {
+		 postUpdate(BR_Boiler_last_ONtime, new DateTimeType())
+	} else {
+		postUpdate(BR_Boiler_last_OFFtime, new DateTimeType())
+	}
+end
+
+rule "LR Heater change"
+when Item LR_Heater1 received command then
+	if(LR_Heater1.state==ON) {
+		 postUpdate(LR_Heater_last_ONtime, new DateTimeType())
+	} else {
+		postUpdate(LR_Heater_last_OFFtime, new DateTimeType())
+	}
+end
+
 //Number BR_Temp_Boiler_LastUpdate "Last Update [%1$ta %1$tR]"	<clock>
 //Number BR_Humidity_sensor_LastUpdate "Last Update [%1$ta %1$tR]"	<clock>
 //Number BR_Temp_sensor_LastUpdate "Last Update [%1$ta %1$tR]"	<clock>
@@ -225,10 +244,12 @@ end
 
 rule "Living room heating timers"
 	when Time cron "0 0 20 * * ?" or Item LR_Set_Time received command or Item LR_Heater1_mode received command then
-	var DateTime LRHeaterEndTime=parse(now.getYear() + "-" + now.getMonthOfYear() + "-" + now.plusDays(1).getDayOfMonth() + "T06:00:00") // BUG HERE on month change need to think about it
-	var DateTime LRHeaterStartTime=LRHeaterEndTime.minusMinutes(60*((LR_Set_Time.state as DecimalType).intValue))
+	var DateTime LRHeaterEndTime=parse(now.getYear() + "-" + now.getMonthOfYear() + "-" + now.getDayOfMonth() + "T06:00:00")
+	LRHeaterEndTime=LRHeaterEndTime.plusDays(1); // Heater ends time is always next day at 6:00 due to better pricing conditions :P
+	var DateTime LRHeaterStartTime=LRHeaterEndTime.minusMinutes(60*((LR_Set_Time.state as DecimalType).intValue)) // Start time is calculated by substracting 60 mins * Set time input value
 //	var LR_Temp_Sensor1=LR_Temp_sensor1.state as DecimalType
 	// Cancel timers in any case as they're going to be recreated anyway if you use AUTO mode. In MANUAL and OFF they should be OFF too...
+
 	if (tLRHeaterStart != null) {
 		logInfo("RULES","LR:Canceling LR Start timer")
 		tLRHeaterStart.cancel
@@ -241,16 +262,17 @@ rule "Living room heating timers"
 			case 0: {
 						logDebug("RULES","LR:Mode OFF")
 						sendCommand(LR_Heater1,OFF)
+						postUpdate(LR_Heater_last_OFFtime, new DateTimeType())
 					}	
 			case 1: logDebug("RULES","LR:Mode MANUAL")		
 			case 2 : 	{
-				logInfo("RULES","LR Start timer has been SET")
+				logInfo("RULES","LR Start timer has been SET="+LRHeaterStartTime)
 				tLRHeaterStart = createTimer(LRHeaterStartTime) [| 
 					logInfo("RULES","LR:STARTING HEATER TIME")
 					sendCommand(LR_Heater1,ON)
 					postUpdate(LR_Heater_last_ONtime, new DateTimeType())
 				]
-				logInfo("RULES","LR Stop timer has been SET ")
+				logInfo("RULES","LR Stop timer has been SET="+LRHeaterEndTime)
     			tLRHeaterStop = createTimer(LRHeaterEndTime) [| 
     				logInfo("RULES","LR:STOPPING HEATER TIME")
     				sendCommand(LR_Heater1,OFF)
@@ -265,7 +287,7 @@ end
 
 /************************ BATHROOM********************* */
 rule "Boiler heating timeframe"
-	when Time cron "0 1 0 * * ?" then //or Item TestButton received command 
+	when Time cron "0 1 0 * * ?" or Item TestButton received command then   
     var DateTime endTimeMorning=parse(now.getYear() + "-" + now.getMonthOfYear() + "-" + now.getDayOfMonth() + "T" + Boiler_EndTimeMorning + ":00")     
     var DateTime startTimeMorning = endTimeMorning.minusMinutes(100)
     var DateTime endTimeAfternoon = parse(now.getYear() + "-" + now.getMonthOfYear() + "-" + now.getDayOfMonth() + "T" + Boiler_EndTimeAfternoon + ":00")
@@ -290,27 +312,35 @@ rule "Boiler heating timeframe"
     }
     
  if(BR_Mode.state>0) {
+ 		logInfo("RULES","BR Boiler morning start timer has been SET="+startTimeMorning)
      	tstartTimeMorning = createTimer(startTimeMorning) [| 
      		logInfo("RULES","BR:BOILER TIMER: STARTING MORNING BOILER TIME")
+     		sendCommand(BR_Boiler,ON)
      		postUpdate(BR_Boiler_last_ONtime, new DateTimeType())  
      	]
+ 		logInfo("RULES","BR Boiler morning stop timer has been SET="+tendTimeMorning)
      	tendTimeMorning = createTimer(endTimeMorning) [| 
      		logInfo("RULES","BR:BOILER TIMER: STOPPING MORNING BOILER TIME")
+     		sendCommand(BR_Boiler,OFF)
      		postUpdate(BR_Boiler_last_OFFtime, new DateTimeType())
      	]
+     	logInfo("RULES","BR Boiler afternooon start timer has been SET="+startTimeAfternoon)
      	tstartTimeAfternoon = createTimer(startTimeAfternoon) [| 
      		logInfo("RULES","BR:BOILER TIMER: STARTING AFTERNOON BOILER TIME")
+     		sendCommand(BR_Boiler,ON)
      		postUpdate(BR_Boiler_last_ONtime, new DateTimeType())
      	]
+     	logInfo("RULES","BR Boiler afternooon stop timer has been SET="+endTimeAfternoon)
      	tendTimeAfternoon = createTimer(endTimeAfternoon) [| 
      		logInfo("RULES","BR:BOILER TIMER: STOPPING AFTERNOON BOILER TIME")
+     		sendCommand(BR_Boiler,OFF)
      		postUpdate(BR_Boiler_last_OFFtime, new DateTimeType())
      	]
      }
 end
 
 rule "Bathroom Humidity control"
-	when Time cron"0 */5 * * * ?" or Item BR_Humidity_Set received update or Item BR_Mode received update then
+	when Time cron"0 */5 * * * ?" or Item BR_Humidity_Set received update or Item BR_Mode received update or Item BR_Humidity_sensor received update then
 	var humidity=BR_Humidity_sensor.state as DecimalType 
 	var humidity_set=BR_Humidity_Set.state as DecimalType
 	logDebug("RULES","BR FAN control started")
@@ -321,7 +351,7 @@ rule "Bathroom Humidity control"
 		if(humidity<humidity_set&&BR_Fan_state.state==ON){ //
 			sendCommand(BR_Fan,OFF)
 			logDebug("RULES","BR FAN has stopped")
-		} else if ((humidity>(humidity_set+10))&&BR_Fan_state.state==OFF){ //
+		} else if ((humidity>(humidity_set+7))&&BR_Fan_state.state==OFF){ //
 			sendCommand(BR_Fan,ON)
 			logDebug("RULES","BR FAN has started")
 		}
@@ -356,19 +386,20 @@ rule "Bathroom Boiler - temp control"
 	var temperature=BR_Temp_Boiler.state as DecimalType 
 	var temperature_set=BR_Temp_Boiler_Set.state as DecimalType
 	logDebug("RULES","BR Heater control started")
-/* 	switch (BR_Mode.state) {
+ 	switch (BR_Mode.state) {
 	case 0: { sendCommand(BR_Boiler,OFF) } 
-	case 1: { if(temperature>=temperature_set&&BR_Boiler_state.state==ON){ //
+	case 1: { 
+
+		}
+	case 2: {
+		if(temperature>=temperature_set&&BR_Boiler_state.state==ON){ //
 				sendCommand(BR_Boiler,OFF)
 				logDebug("RULES","BR Heater has stopped")
-			} else if ((temperature<=temperature_set-5)&&BR_Boiler_state.state==OFF){ //
-				sendCommand(BR_Boiler,ON)
-				logDebug("RULES","BR Heater has started")
-			}
-			logDebug("RULES","BR Heater control ended")
-			}
-		}
-		/* */
+			} 
+			logDebug("RULES","BR Heater control ended")	/* */
+			}	
+	}
+
 end
 
 
