@@ -392,7 +392,7 @@ boolean PubSubClient::unsubscribe(char* topic) {
    return false;
 }
 
-void PubSubClient::disconnect() {
+void PubSubClient::() {
    buffer[0] = MQTTDISCONNECT;
    buffer[1] = 0;
    _client->write(buffer,2);

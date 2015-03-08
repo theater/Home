@@ -6,15 +6,15 @@
 byte server[] = { 192,168,254,30 };  // IP Address of the MQTT server
 
 uint8_t mac[6] = {0x36,0x22,0x02,0x03,0x04,0x05};
-IPAddress myIP(192,168,254,36);  //IP address of Arduino
+IPAddress myIP(192,168,254,35);  //IP address of Arduino
 
 EthernetClient ethClient;
 PubSubClient MQTT_Client(server, 1883, callback, ethClient);
 
 int MQTT_Connect () {
   if (!MQTT_Client.connected()) {
-    if (MQTT_Client.connect("ArduinoNANO-Weather")) {
-      MQTT_Client.publish("Arduino","Arduino-Weather is UP");
+    if (MQTT_Client.connect("ArduinoNANO-TEST")) {
+      MQTT_Client.publish("Arduino","Arduino-TEST is UP");
 //      Serial.println("Connected to MQTT\n");
       return 1;
     } else {

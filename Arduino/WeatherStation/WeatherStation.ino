@@ -125,7 +125,7 @@ void setup()
   bmp.begin();
   Ethernet.begin(mac,myIP);
   delay(500);
-//  MQTT_Connect();
+  MQTT_Connect();
 MQTT_Client.connect("ArduinoNANO-Weather");
 //MQTT_Client.subscribe("Weather_pressure_set");
 }
@@ -133,6 +133,7 @@ MQTT_Client.connect("ArduinoNANO-Weather");
 void loop()
 {
   if(!MQTT_Client.connected()) {
+    MQTT_Connect();
     now=millis();
     if (now - resetCheck>=RESET_INTERVAL) {  
       resetCheck=now;
@@ -140,7 +141,6 @@ void loop()
       Enc28J60.init(mac);
 //      Serial.print("ResetCounter:");Serial.println(resetCounter);
       if(resetCounter>=3) { Serial.println("Reseting arduino"); digitalWrite(RESET, LOW); }
-      MQTT_Connect();
     }
   } else {
   resetCounter=0;
