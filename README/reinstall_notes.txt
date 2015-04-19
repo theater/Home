@@ -53,3 +53,6 @@ log_dest file /var/log/mosquitto.log
 #### side note - how to add debugging add lines to logback_debug.xml
 <logger name="org.openhab.binding.mqtt" level="DEBUG" />
 <logger name="org.openhab.io.transport.mqtt" level="DEBUG" />
+
+Useful Ubuntu commands:
+ update-rc.d mosquitto defaults (updates rcX.d levels)
