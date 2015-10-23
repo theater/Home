@@ -5,8 +5,9 @@ sitemap demo label="Main Menu"
 /* 			Text item=LR_Presense_1 {
 				Chart item=LR_Presense_1 period=D refresh=3600
 			} */ 			
-			Frame label="Сензори" {	
+			Frame label="Настройки" {	
 				Switch item=LR_Heater1_mode mappings=[0="off", 1="manual", 2="auto"]	
+				Setpoint item=LR_Temp_set minValue=16 maxValue=26 step=0.5 visibility=[LR_Heater1_mode==2]
 				Text item=LR_Temp_sensor1 valuecolor=[ LR_Temp_sensor1_LastUpdate>120="lightgray", >25="orange", >17="green", <=17="blue"]  {
 					Frame  {
 						Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"] 					
@@ -17,35 +18,7 @@ sitemap demo label="Main Menu"
 						Chart item=LR_Temp_sensor1 period=Y refresh=3600 visibility=[Chart_Period==4]
 					}	
 				}	
-/*  			Text item=LR_Temp_sensor2 valuecolor=[>25="orange", >17="green", <=17="blue"]  {
-				Frame  {
-					Switch item=Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week", 3="Month"] 					
-					Chart item=LR_Temp_sensor2 period=h refresh=600 visibility=[Chart_Period==0] 					
-					Chart item=LR_Temp_sensor2 period=D refresh=3600 visibility=[Chart_Period==1] 					
-					Chart item=LR_Temp_sensor2 period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-					Chart item=LR_Temp_sensor2 period=M refresh=3600 visibility=[Chart_Period==3]
-				}			
-			}/* */	
-				Text item=LR_Humidity_sensor1 valuecolor=[LR_Humidity_sensor1_LastUpdate>120="lightgray", <35="orange", >35="green", >55="orange", >70="red"]  {
-					Frame  {
-						Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"] 					
-						Chart item=LR_Humidity_sensor1 period=h refresh=600 visibility=[Chart_Period==0] 					
-						Chart item=LR_Humidity_sensor1 period=D refresh=3600 visibility=[Chart_Period==1] 					
-						Chart item=LR_Humidity_sensor1 period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-						Chart item=LR_Humidity_sensor1 period=M refresh=3600 visibility=[Chart_Period==3]
-						Chart item=LR_Humidity_sensor1 period=Y refresh=3600 visibility=[Chart_Period==4]
-					}				
-				}
-				Text item=LR_Heater1_state icon="heater2"
-				Switch item=LR_Heater1 icon="heater2"
-				Text item=LR_Heater_last_ONtime
-				Text item=LR_Heater_last_OFFtime
-			}	
-			Frame label="Auto" visibility=[LR_Heater1_mode==2]{					
-				Setpoint item=LR_Set_TemperatureON minValue=5 maxValue=25 step=1 visibility=[LR_Heater1_mode==1]
-					Setpoint item=LR_Set_Time minValue=0 maxValue=10 step=0.5 					
-					Text item=LR_Calculated_Time
-					Text item=LR_Temp_avg {	
+				Text item=LR_Temp_avg {	
 						Frame  {
 							Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"] 					
 							Chart item=CompareAverage period=h refresh=600 visibility=[Chart_Period==0] 					
@@ -54,7 +27,17 @@ sitemap demo label="Main Menu"
 							Chart item=CompareAverage period=M refresh=3600 visibility=[Chart_Period==3]
 							Chart item=CompareAverage period=Y refresh=3600 visibility=[Chart_Period==4]
 						}	
-					} 					 					
+				} 		
+				Text item=LR_Heater1 icon="heater2" //mappings=[0="OFF",1="ON"]
+			}	
+			Frame label="Auto" visibility=[LR_Heater1_mode==2]{					
+				Setpoint item=LR_Set_TemperatureON minValue=5 maxValue=25 step=1 visibility=[LR_Heater1_mode==1]				
+					Text item=LR_Calculated_Time
+					Text item=LR_correction
+					Text item=LR_Heater_last_ONtime
+					Text item=LR_Heater_last_OFFtime
+					Text item=LR_Temp_sensor1_LastUpdate			 					
+//					Setpoint item=LR_Set_Time minValue=0 maxValue=10 step=0.5
 				}		
 			Frame label="Manual" icon="clock"  visibility=[LR_Heater1_mode==1]{
 					Switch item=LR_Heater1 					
@@ -65,8 +48,9 @@ sitemap demo label="Main Menu"
 		Text label="Кухня" icon="kitchen" { Text label="placeholder" icon="kitchen"	}
 		Text item=BR_Temp_sensor icon="bath" label="Баня [%.1f °C]" {	
 			Frame label="Настройки" {	
-				Switch item=BR_Mode mappings=[0="OFF", 1="manual", 2="auto"]
+				Switch item=BR_Mode mappings=[0="off", 1="manual", 3="boiler on", 4="fan on", 2="auto"]
 				Text item=BR_Temp_sensor valuecolor=[ BR_Temp_sensor_LastUpdate>120="lightgray", >25="orange", >17="green", <=17="blue"] {
+					Setpoint item=BR_Temp_Room_Set minValue=10 maxValue=30 step=1
 					Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
 					Chart item=BR_Temp_sensor period=h refresh=60 visibility=[Chart_Period==0]
 					Chart item=BR_Temp_sensor period=D refresh=3600 visibility=[Chart_Period==1]
@@ -75,6 +59,7 @@ sitemap demo label="Main Menu"
 					Chart item=BR_Temp_sensor period=Y refresh=3600 visibility=[Chart_Period==4]
 				}
 				Text item=BR_Humidity_sensor valuecolor=[BR_Humidity_sensor_LastUpdate>120="lightgray", <30="red", <40="orange", >=40="green", >60="blue"] {
+					Setpoint item=BR_Humidity_Set minValue=5 maxValue=100 step=5 visibility=[BR_Mode==2]
 					Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
 					Chart item=BR_Humidity_sensor period=h refresh=60 visibility=[Chart_Period==0]
 					Chart item=BR_Humidity_sensor period=D refresh=3600 visibility=[Chart_Period==1]
@@ -83,7 +68,10 @@ sitemap demo label="Main Menu"
 					Chart item=BR_Humidity_sensor period=Y refresh=3600 visibility=[Chart_Period==4]
 				
 				}
-				Text item=BR_Temp_Boiler valuecolor=[ BR_Temp_Boiler_LastUpdate>120="lightgray", >60="red", >35="orange", >27="green", <=27="blue"] {
+				Text item=BR_Temp_Boiler valuecolor=[ BR_Temp_Boiler_LastUpdate>120="lightgray", >60="red", >40="orange", >27="green", <=27="blue"] {
+					Setpoint item=BR_Temp_Boiler_Set minValue=10 maxValue=80 step=5
+					Text item=BR_Boiler_last_ONtime
+					Text item=BR_Boiler_last_OFFtime
 					Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
 					Chart item=BR_Temp_Boiler period=h refresh=60 visibility=[Chart_Period==0]
 					Chart item=BR_Temp_Boiler period=D refresh=3600 visibility=[Chart_Period==1]
@@ -91,9 +79,6 @@ sitemap demo label="Main Menu"
 					Chart item=BR_Temp_Boiler period=M refresh=3600 visibility=[Chart_Period==3]
 					Chart item=BR_Temp_Boiler period=Y refresh=3600 visibility=[Chart_Period==4]
 				}
-				Setpoint item=BR_Temp_Room_Set minValue=10 maxValue=30 step=1 visibility=[BR_Mode==2] 
-				Setpoint item=BR_Humidity_Set minValue=5 maxValue=100 step=5 visibility=[BR_Mode==2]
-				Setpoint item=BR_Temp_Boiler_Set minValue=10 maxValue=80 step=5
 			}
 			Frame label="Ръчен режим" visibility=[BR_Mode==1] {	
 				Switch item=BR_Boiler
@@ -104,8 +89,7 @@ sitemap demo label="Main Menu"
 				Text item=BR_Boiler_state
 				Text item=BR_Fan_state
 				Text item=BR_Heater_state
-				Text item=BR_Boiler_last_ONtime
-				Text item=BR_Boiler_last_OFFtime
+				Text item=BR_Input_pin1
 			}
 		} 
 	}	
@@ -316,6 +300,9 @@ sitemap demo label="Main Menu"
 				}
 				Group item=System icon="settings" {
 					Text item=DirUsage_root valuecolor=[<=1400="green", >1424="orange", >1500="red"]  { Chart item=DirUsage_root period=M refresh=3600 }
+					Text item=UsrUsage valuecolor=[<=1400="green", >1424="orange", >1500="red"]  { Chart item=UsrUsage period=M refresh=3600 }
+					Text item=VarUsage valuecolor=[<=1400="green", >1424="orange", >1500="red"]  { Chart item=VarUsage period=M refresh=3600 }
+					Text item=BigDataUsage valuecolor=[<=1400="green", >1424="orange", >1500="red"]  { Chart item=BigDataUsage period=M refresh=3600 }
 					Text item=MemFreePercent valuecolor=[>20="green", <20="orange", <10="red"]{ Chart item=MemFreePercent period=M refresh=3600 }
 					Text item=MemUsedPercent valuecolor=[<80="green", >90="red",>80="orange"]{ Chart item=MemUsedPercent period=M refresh=3600 }
 //					Text item=MemTotal { Chart item=MemTotal period=M refresh=3600 }
@@ -334,6 +321,7 @@ sitemap demo label="Main Menu"
 				Switch item=OpenHAB mappings=[1="ZeroLogs",2="Restart OH"]
 				Switch item=BackupSystem mappings=[ON="Backup"]
 				Switch item=ALL_Reinitialize icon="settings" mappings=[1="System initialize"]
+				Switch item=HomeAway icon="settings" mappings=[1="Home",2="Away",3="Vacation"]
 			}
 		}
 	}	
@@ -341,7 +329,7 @@ sitemap demo label="Main Menu"
 	Frame label="Date"  {
 		Text item=Date 		
 	}	
- 	Frame label="Playground"  {
+ /* 	Frame label="Playground"  {
 		Switch item=TestButton mappings=[0="Zero",1="One"]
 	}/* */	
 }

@@ -7,13 +7,18 @@
 #include <dht.h>
 #include <Wire.h>
 #include <Adafruit_BMP085.h>
+#include <SoftReset.h>
+#include <Timer.h>
+
 
 #define PUBLISH_INTERVAL 60000  // Publish data each minute to MQTT broker
 #define RESET 3  // Reset button - pin 3 goes to GND
 #define ONE_WIRE_PIN 9  // Data wire is plugged into pin 4 on the Arduino
 #define DHT_PIN 8  //DHT22
 //#define MANUAL_INTERVAL 300000  // Manual function check interval will be on each 5 min
-#define RESET_INTERVAL 60000  // Reset counter will be changed each 1 mins, 3 times if not connected by then - reset the duino
+#define RESET_INTERVAL 15000  // Reset counter will be changed each 1 mins, 3 times if not connected by then - reset the duino
+#define gpio digitalWrite
+
 int resetCounter=0;
 int resetCheck;
 byte server[] = { 192,168,254,30 };
@@ -23,6 +28,9 @@ unsigned long sentTime=0;
 uint8_t mac[6] = {0x36,0x36,0x36,0x36,0x36,0x36};
 IPAddress myIP(192,168,254,36);  //IP address of Arduino
 
+Timer Reset_Timer;
+Timer OW_GET_Timer;
+
 Adafruit_BMP085 bmp;
 EthernetClient ethClient;
 PubSubClient MQTT_Client(server, 1883, callback, ethClient);
@@ -31,7 +39,7 @@ DallasTemperature sensors(&oneWire);
 dht DHT;
 
 int MQTT_Connect () {
-    MQTT_Client.disconnect();
+  if (!MQTT_Client.connected()) {
     if (MQTT_Client.connect("ArduinoNANO-Weather")) {
       MQTT_Client.subscribe("Weather_pressure_set");
 //      Serial.println("Connected to MQTT\n");
@@ -40,13 +48,11 @@ int MQTT_Connect () {
 //       Serial.println("Error connecting to MQTT\n");
        return 0;
      }
+   } else return 1;
 }
 
 void Publish_Data () {
-  now = millis();
-  if ((now - sentTime)>=PUBLISH_INTERVAL) {  
-    Serial.println("Entered publishing...");
-    sentTime=now;
+//    Serial.println("Entered publishing...");
     bmp.begin();
     float Temperature=sensors.getTempCByIndex(0);
 //    int Altitude=int(bmp.readAltitude(SEALEVEL_PRESSURE));
@@ -88,7 +94,6 @@ void Publish_Data () {
 //      Serial.println(DHT.humidity);        //to serial
       MQTT_Client.publish("Weather_humidity",strConvert); // send to MQTT
     }
-  } 
 }
  
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -118,33 +123,42 @@ int freeRam () {
   return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
 }/**/
 
+void ResetFunction() {
+  if (!MQTT_Connect()){
+    resetCounter++;
+//    Serial.print("Not connected... Counter=");Serial.println();
+  } else {
+    resetCounter=0;
+  }
+  if(resetCounter>=3){
+       Enc28J60.init(mac);
+  }
+  if(resetCounter>5) {
+    Serial.println("Reset counter reached maximum treshold. Resetting...");
+    gpio(RESET,LOW);
+  }
+}
+
 void setup()
 {
   digitalWrite(RESET, HIGH);
   Serial.begin(115200);
+  Serial.println("Starting Weatherstation...");
   bmp.begin();
   Ethernet.begin(mac,myIP);
-  delay(500);
+  delay(15);
   MQTT_Connect();
-MQTT_Client.connect("ArduinoNANO-Weather");
+  delay(15);
+  Reset_Timer.every(RESET_INTERVAL,ResetFunction);
+  OW_GET_Timer.every(PUBLISH_INTERVAL,Publish_Data);
 //MQTT_Client.subscribe("Weather_pressure_set");
 }
 
 void loop()
 {
-  if(!MQTT_Client.connected()) {
-    MQTT_Connect();
-    now=millis();
-    if (now - resetCheck>=RESET_INTERVAL) {  
-      resetCheck=now;
-      ++resetCounter;
-      Enc28J60.init(mac);
-//      Serial.print("ResetCounter:");Serial.println(resetCounter);
-      if(resetCounter>=3) { Serial.println("Reseting arduino"); digitalWrite(RESET, LOW); }
-    }
-  } else {
-  resetCounter=0;
-  Publish_Data();
-  MQTT_Client.loop();
-  }
+  Reset_Timer.update();
+ if (MQTT_Connect()){  
+    MQTT_Client.loop(); 
+    OW_GET_Timer.update();
+  } /**/
 } 

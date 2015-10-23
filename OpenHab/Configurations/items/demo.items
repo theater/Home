@@ -35,6 +35,9 @@ Number LR_Set_Time "Зададен интервал от време [%.1f hr]" <
 DateTime LR_Heater_last_ONtime "Last time LR heater ON  [%1$tA, %1$tR]" <clock> (All,LR,EveryChangePersist)
 DateTime LR_Heater_last_OFFtime "Last time LR heater OFF [%1$tA, %1$tR]" <clock> (All,LR,EveryChangePersist)
 Number LR_Temp_avg "Daily average [%.1f °C]" <temperature> (EndOfEveryDayPersist,CompareAverage)
+Number LR_Temp_set "Желана температура в дневна [%.1f °C]" <temperature> (All,LR,Persisted_items)
+Number LR_correction "TEMP:Correction time [%.2f hr]" <calendar> 
+
 
 //Switch	LR_Presense_1	"Има ли някой :)"	<parents>	(All,Sensors,LR,Persisted_items) { mqtt="<[mqtt:LR_Presense_1:state:default" } // onewire="28.FF5959201400#temperature"
 Rollershutter	LR_East_Shutter01	"Щора,изток - прозорец-кухня"	(All,LR,Roller_Shutters)	
@@ -53,24 +56,25 @@ Switch	BR_Heater	"Отопление - баня"	<heater2>	(All,Heaters,BR)	 { m
 Switch	BR_Heater_state	"Отопление - баня"	<heater2>	(All,Heaters,BR)	 { mqtt="<[mqtt:BR_HEATER_CB:command:default]" }
 Switch	BR_Boiler	"Бойлер"	<boiler>	(All,Heaters,BR)	 { mqtt=">[mqtt:BR_BOILER:command:*:${command}]" }
 Switch	BR_Boiler_state	"Бойлер"	<boiler>	(All,Heaters,BR)	 { mqtt="<[mqtt:BR_BOILER_CB:command:default]" }
-Number	BR_Temp_Boiler	"Бойлер [%.1f °C]"	<temperature>	(All,Sensors,BR,Sensors) { mqtt="<[mqtt:BR_BOILER_TEMP_SENSOR:state:default" } // onewire="28.FF5959201400#temperature"
-Number	BR_Humidity_sensor	"Влажност в баня [%.1f %%]"	<temperature>	(All,Sensors,BR) { mqtt="<[mqtt:BR_H_SENSOR:state:default" } // onewire="28.FF5959201400#temperature"
-Number	BR_Temp_sensor	"Температура в баня [%.1f °C]"	<temperature>	(All,Sensors,BR) { mqtt="<[mqtt:BR_TEMP_SENSOR:state:default" } // onewire="28.FF5959201400#temperature"
+Number	BR_Temp_Boiler	"Бойлер [%.1f °C]"	<temperature>	(All,Sensors,BR,Sensors) { mqtt="<[mqtt:BR_BOILER_TEMP_SENSOR:state:default]" } // onewire="28.FF5959201400#temperature"
+Number	BR_Humidity_sensor	"Влажност в баня [%.1f %%]"	<temperature>	(All,Sensors,BR) { mqtt="<[mqtt:BR_H_SENSOR:state:default]" } // onewire="28.FF5959201400#temperature"
+Number	BR_Temp_sensor	"Температура в баня [%.1f °C]"	<temperature>	(All,Sensors,BR) { mqtt="<[mqtt:BR_TEMP_SENSOR:state:default]" } // onewire="28.FF5959201400#temperature"
 Number BR_Temp_Boiler_LastUpdate "Last Update [%1$ta %1$tR]"	<clock> (All,BR)
 Number BR_Humidity_sensor_LastUpdate "Last Update [%1$ta %1$tR]"	<clock> (All,BR)
 Number BR_Temp_sensor_LastUpdate "Last Update [%1$ta %1$tR]"	<clock> (All,BR)
-Number BR_Temp_Boiler_Set "Зададена температура бойлер [%.1f °C]" <temperature> (All,BR,Persisted_items)
-Number BR_Temp_Room_Set "Зададена температура[%.1f °C]" <temperature> (All,BR,Persisted_items)
-Number BR_Humidity_Set  "Зададена влажност[%.1f %%]" <temperature> (All,BR,Persisted_items)
-Number BR_Mode "Режим" <network> (All,Modes,Persisted_items) { mqtt=">[mqtt:BR_Mode:command:*:${command}]" }
+Number BR_Temp_Boiler_Set "Зададена температура бойлер [%.1f °C]" <temperature> (All,BR,Persisted_items) { mqtt=">[mqtt:BR_BOILER_SET:command:*:${command}]" }
+Number BR_Temp_Room_Set "Зададена температура[%.1f °C]" <temperature> (All,BR,Persisted_items) { mqtt=">[mqtt:BR_TEMP_ROOM_SET:command:*:${command}]" }
+Number BR_Humidity_Set  "Зададена влажност[%.1f %%]" <temperature> (All,BR,Persisted_items) { mqtt=">[mqtt:BR_HUMIDITY_SET:command:*:${command}]" }
+Number BR_Mode "Режим" <network> (All,Modes,Persisted_items) { mqtt=">[mqtt:BR_Mode:command:*:${command}]"} //,<[mqtt:BR_Mode:command:default]" }
+Number BR_Mode_CB "Режим callback" <network> (All,Modes,Persisted_items) { mqtt="<[mqtt:BR_Mode_CB:command:default]" }
 DateTime BR_Boiler_last_ONtime "Last time Boiler ON [%1$tA, %1$tR]" <clock> (All,BR,EveryChangePersist)
 DateTime BR_Boiler_last_OFFtime "Last time Boiler OFF [%1$tA, %1$tR]" <clock> (All,BR,EveryChangePersist)
+Switch BR_Input_pin1 "Ключ-вентилатор" <contact> { mqtt="<[mqtt:BR_INPUT_PIN1:command:default]" }
 
 
 
 //  Aquarium
 Group	AQ_Temperature_Chart
-Number	AQ_Temperature_Chart_Period	(AQ_Temperature_Chart,Persisted_items)	
 Number	AQ_Temp_Sensor1	"Температура  [%.1f °C]"	<temperature>	(All,Sensors,Aquarium,AQ_Temperature_Chart)		{ mqtt="<[mqtt:AQ_Temp_Sensor1:state:default" } //onewire="28.5E74D2050000#temperature"
 Number AQ_Logics_mode "Режим" <network> (All,Modes,AQ,Persisted_items)
 Switch	AQ_Heater1	"Нагревател"	<heater2>	(All,Heaters,Aquarium,Persisted_items)		{ mqtt=">[mqtt:AQ_Heater1:command:*:${command}]" } //gpio="pin:47 activelow:yes",  
@@ -87,11 +91,11 @@ Group	Weather_Chart	(Weather)
 //My Station:
 Number	Weather_Temp_Max	"Todays Maximum [%.1f °C]"	<temperature>	(EndOfEveryDayPersist)	
 Number	Weather_Temp_Min	"Todays Minimum [%.1f °C]"	<temperature>	(EndOfEveryDayPersist)	
-Number Weather_pressure_set "Altimeter setting [%d hPA]" <temperature> (All,Sensors) { mqtt=">[mqtt:Weather_pressure_set:command:*:default" }
-Number Weather_pressure "Outside Pressure [%d hPA]" <temperature> (All,Sensors,gWeather_pressure) { mqtt="<[mqtt:Weather_pressure:state:default" }
-Number Weather_humidity "Outside Humidity [%d %%]" <temperature> (All,Sensors,gWeather_Humidity) { mqtt="<[mqtt:Weather_humidity:state:default" }
+Number Weather_pressure_set "Altimeter setting [%d hPA]" <temperature> (All,Sensors) { mqtt=">[mqtt:Weather_pressure_set:command:*:default]" }
+Number Weather_pressure "Outside Pressure [%d hPA]" <temperature> (All,Sensors,gWeather_pressure) { mqtt="<[mqtt:Weather_pressure:state:default]" }
+Number Weather_humidity "Outside Humidity [%d %%]" <temperature> (All,Sensors,gWeather_Humidity) { mqtt="<[mqtt:Weather_humidity:state:default]" }
 Number Weather_temperature1 "Outside Temperature [%.1f °C]" <temperature> (All,Sensors,gWeather_Temperature)
-Number Weather_temperature2 "DS18B20 [%.1f °C]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_temperature1:state:default" }
+Number Weather_temperature2 "DS18B20 [%.1f °C]" <temperature> (All,Sensors) { mqtt="<[mqtt:Weather_temperature1:state:default]" }
 // Internet weather:
 // UNDERGROUND WEATHER
 Number Weather_temperature_Max_wunderground "Underground Temp MAX [%.1f °C" (EndOfEveryDayPersist)
@@ -119,8 +123,8 @@ DateTime	Weather_humidity_LastUpdate	"Last Update [%1$ta %1$tR]"	<clock>
 
 
 // IP Monitoring - network health binding
-Switch  IP_iPhone "iPhone" <network> (IP_Devices,Persisted_items) { nh="192.168.254.102" }
-Switch  IP_Nexus "GalaxyNexus" <network> (IP_Devices,Persisted_items) { nh="192.168.254.101" }
+Switch  IP_iPhone "Konstantin iphone" <network> (IP_Devices,Persisted_items) { nh="192.168.254.102" }
+Switch  IP_Nexus "Vesela Android" <network> (IP_Devices,Persisted_items) { nh="192.168.254.101" }
 Switch  IP_TV "TV" <network> (IP_Devices,Persisted_items) { nh="192.168.254.103" }
 Switch  IP_PC "PC" <network> (IP_Devices,Persisted_items) { nh="192.168.254.100", wol="192.168.254.100#BC:AE:C5:98:CB:61", exec=">[OFF:/bin/sh /hab/openhab/shutdown_pc 192.168.254.100 theater charly78]" }
 Switch  IP_Beaglebone "BeagleBone" <network> (IP_Devices,Persisted_items) { nh="192.168.254.30" }
@@ -154,13 +158,16 @@ Number OpenhabCpuUser   "CPU user [%.1f]"   (System,Persisted_items) { systeminf
 Number OpenhabCpuTotal  "CPU total [%.1f]"  (System,Persisted_items) { systeminfo="ProcessCpuTotal:300000:$$" }
 Number OpenhabUptime    "Uptime [%d]"   (System,Persisted_items) { systeminfo="ProcessUptime:300000:$$" }
 String OpenhabUptimeFormatted   "Openhab Uptime form. [%s]" (System,Persisted_items) { systeminfo="ProcessUptimeFormatted:300000:$$" }
-Number DirUsage_root "Dir usage [%.1f]"  (System,Persisted_items) { systeminfo="DirUsage:300000:/" }
+Number DirUsage_root "Dir / usage [%.1fGB]"  (System,Persisted_items) { systeminfo="DirUsage:300000:/" }
+Number UsrUsage "Dir /usr usage [%.3fGB]"  (System,Persisted_items) { systeminfo="DirUsage:300000:/var" }
+Number VarUsage "Dir /var usage [%.3fGB]"  (System,Persisted_items) { systeminfo="DirUsage:300000:/usr" }
+Number BigDataUsage "Dir /bigdata usage [%.1fGB]"  (System,Persisted_items) { systeminfo="DirUsage:300000:/bigdata" }
 /* */
 
 // Some custom buttons for exec commands
 Number OpenHAB "OpenHAB commands" <settings> (System) // {exec="/hab/openhab/scripts/clean_logs.sh"} 
 Switch BackupSystem "Backup the configuration" <settings> (System) // {exec="/root/backup.sh"}
-
+Number HomeAway "Family currently at:" <settings> (System,Persisted_items) { mqtt=">[mqtt:HomeAway:command:*:${command}]" }
 
 // PLAYGROUND
 //Number SendMail <network> 
