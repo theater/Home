@@ -22,6 +22,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BathRoomMirrorHeatingCtrl/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BathRoomMirrorHeatingCtrl/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BathRoomMirrorHeatingCtrl/libraries/Timer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BathRoomMirrorHeatingCtrl/libraries/DHT}&quot;"/>
 								</option>
 								<inputType id="it.baeyens.arduino.compiler.cpp.sketch.input.1733305542" name="CPP source files" superClass="it.baeyens.arduino.compiler.cpp.sketch.input"/>
 							</tool>
@@ -30,6 +31,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BathRoomMirrorHeatingCtrl/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BathRoomMirrorHeatingCtrl/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BathRoomMirrorHeatingCtrl/libraries/Timer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BathRoomMirrorHeatingCtrl/libraries/DHT}&quot;"/>
 								</option>
 								<inputType id="it.baeyens.arduino.compiler.c.sketch.input.125096540" name="C Source Files" superClass="it.baeyens.arduino.compiler.c.sketch.input"/>
 							</tool>

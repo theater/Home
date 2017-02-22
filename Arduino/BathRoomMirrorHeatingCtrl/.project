@@ -43,6 +43,11 @@
 			<location>C:/eclipse/arduinoPlugin/packages/arduino/hardware/avr/1.6.5/variants/eightanaloginputs</location>
 		</link>
 		<link>
+			<name>libraries/DHT</name>
+			<type>2</type>
+			<location>D:/HomeAutomation/ArduinoLibs/DHT</location>
+		</link>
+		<link>
 			<name>libraries/Timer</name>
 			<type>2</type>
 			<location>D:/HomeAutomation/ArduinoLibs/Timer</location>
